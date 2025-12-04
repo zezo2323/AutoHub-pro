@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.autohub.autohub.frontend.controllers.AddCarController"
+            prefWidth="420" prefHeight="400" style="-fx-background-color: white; -fx-background-radius: 16;">
+    <VBox alignment="CENTER" spacing="15" AnchorPane.topAnchor="15" AnchorPane.leftAnchor="15" AnchorPane.rightAnchor="15">
+        <Label text="Add New Car" style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #2563eb;"/>
+        <TextField fx:id="modelField" promptText="Car Model" />
+        <TextField fx:id="typeField" promptText="Type (SUV, Sedan...)" />
+        <TextField fx:id="yearField" promptText="Year" />
+        <TextField fx:id="fuelField" promptText="Fuel Type" />
+        <TextField fx:id="seatsField" promptText="Seats" />
+        <TextField fx:id="priceField" promptText="Price/Day" />
+        <HBox spacing="10">
+            <Button text="Cancel" style="-fx-background-color: #f2f2f2; -fx-text-fill: #2563eb;" onAction="#handleCancel"/>
+            <Button text="Add" style="-fx-background-color: #2563eb; -fx-text-fill: white;" onAction="#handleAdd"/>
+        </HBox>
+        <Label fx:id="msgLabel" style="-fx-text-fill: red;"/>
+    </VBox>
+</AnchorPane>
