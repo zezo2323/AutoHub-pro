@@ -10,39 +10,46 @@
 
     <!-- TOP NAVIGATION BAR -->
     <top>
-        <HBox spacing="0"
+        <HBox spacing="0" alignment="CENTER"
               style="-fx-background-color: white; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0; -fx-padding: 0;">
             <padding>
                 <Insets top="0" right="0" bottom="0" left="0"/>
             </padding>
 
             <!-- LOGO -->
-            <HBox spacing="12" style="-fx-padding: 16 30;">
-                <FontIcon iconLiteral="fas-car" iconSize="32" style="-fx-icon-color: #2c5ff6;"/>
-                <VBox spacing="2" style="-fx-alignment: center-left;">
-                    <Label text="DriveNow" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
-                    <Label text="Admin Panel" style="-fx-font-size: 11px; -fx-text-fill: #64748b;"/>
+            <!-- LOGO -->
+            <HBox spacing="5" alignment="CENTER_LEFT" style="-fx-padding: 0 0 0 30;">
+                <StackPane minWidth="40" minHeight="40" maxWidth="40" maxHeight="40" prefWidth="40" prefHeight="40"
+                           style="-fx-background-color: #2c5ff6; -fx-background-radius: 10;">
+                    <FontIcon iconLiteral="fas-car" iconSize="22" fill="white"/>
+                </StackPane>
+
+                <VBox spacing="0" alignment="CENTER_LEFT">
+                    <Label text="DriveNow" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                    <Label text="Admin Panel" style="-fx-font-size: 10px; -fx-text-fill: #64748b;"/>
                 </VBox>
             </HBox>
 
-            <!-- NAVIGATION BUTTONS -->
-            <HBox spacing="0">
-                <Button fx:id="btnDashboard" text="Dashboard" onAction="#handleDashboard"
-                        style="-fx-background-color: #2c5ff6; -fx-text-fill: white; -fx-padding: 16 20; -fx-font-size: 14px; -fx-border-width: 0; -fx-background-radius: 0;"/>
-                <Button fx:id="btnCars" text="Cars" onAction="#handleCars"
-                        style="-fx-background-color: transparent; -fx-text-fill: #64748b; -fx-padding: 16 20; -fx-font-size: 14px; -fx-border-width: 0;"/>
-                <Button fx:id="btnRentals" text="Rentals" onAction="#handleRentals"
-                        style="-fx-background-color: transparent; -fx-text-fill: #64748b; -fx-padding: 16 20; -fx-font-size: 14px; -fx-border-width: 0;"/>
-                <Button fx:id="btnInvoices" text="Invoices" onAction="#handleInvoices"
-                        style="-fx-background-color: transparent; -fx-text-fill: #64748b; -fx-padding: 16 20; -fx-font-size: 14px; -fx-border-width: 0;"/>
-                <Button fx:id="btnComments" text="Comments" onAction="#handleComments"
-                        style="-fx-background-color: transparent; -fx-text-fill: #64748b; -fx-padding: 16 20; -fx-font-size: 14px; -fx-border-width: 0;"/>
-                <Button fx:id="btnSettings" text="Settings" onAction="#handleSettings"
-                        style="-fx-background-color: transparent; -fx-text-fill: #64748b; -fx-padding: 16 20; -fx-font-size: 14px; -fx-border-width: 0;"/>
-            </HBox>
-
-            <!-- SPACER -->
             <Region HBox.hgrow="ALWAYS"/>
+            <!-- NAVIGATION BUTTONS -->
+            <HBox spacing="0" alignment="CENTER">
+                <Button fx:id="btnDashboard" text="Dashboard" onAction="#handleDashboard"/>
+                <Button fx:id="btnCars" text="Cars" onAction="#handleCars"/>
+                <Button fx:id="btnRentals" text="Rentals" onAction="#handleRentals"/>
+                <Button fx:id="btnInvoices" text="Invoices" onAction="#handleInvoices"/>
+                <Button fx:id="btnComments" text="Comments" onAction="#handleComments"/>
+                <Button fx:id="btnSettings" text="Settings" onAction="#handleSettings"/>
+                <Button fx:id="btnDarkMode" onAction="#toggleDarkMode"
+                        style="-fx-background-color: transparent; -fx-padding: 10 18; -fx-border-width: 0;">
+                    <graphic>
+                        <FontIcon fx:id="iconDarkMode" iconLiteral="fas-moon" iconSize="16" iconColor="#64748b"/>
+                    </graphic>
+                </Button>
+
+
+            </HBox>
+            <Region HBox.hgrow="ALWAYS"/>
+
 
             <!-- ADMIN USER BUTTON -->
             <Button fx:id="btnProfile" onAction="#handleProfile"

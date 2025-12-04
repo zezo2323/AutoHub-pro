@@ -21,6 +21,13 @@ import java.util.ResourceBundle;
 public class DashboardController implements Initializable {
 
     @FXML
+    private Button btnDarkMode;
+    @FXML
+    private FontIcon iconDarkMode;
+
+    private boolean isDarkMode = false;
+
+    @FXML
     private VBox contentBox;
     @FXML
     private Button btnDashboard, btnCars, btnRentals, btnInvoices, btnComments, btnSettings;
@@ -30,7 +37,42 @@ public class DashboardController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         loadDashboardContent();
+        setupNavigationIcons();
     }
+
+    @FXML
+    private void toggleDarkMode() {
+        isDarkMode = !isDarkMode;
+
+        if (isDarkMode) {
+            applyDarkMode();
+            iconDarkMode.setIconLiteral("fas-sun");
+            iconDarkMode.setIconColor(javafx.scene.paint.Color.web("#fbbf24"));
+        } else {
+            applyLightMode();
+            iconDarkMode.setIconLiteral("fas-moon");
+            iconDarkMode.setIconColor(javafx.scene.paint.Color.web("#64748b"));
+        }
+    }
+
+    private void applyDarkMode() {
+        // الخلفية الرئيسية
+        contentBox.getParent().getParent().setStyle("-fx-background-color: #0f172a;");
+        contentBox.setStyle("-fx-background-color: #0f172a;");
+
+        // الناف بار
+        contentBox.getScene().getRoot().lookup(".top > HBox")
+                .setStyle("-fx-background-color: #1e293b; -fx-border-color: #334155; -fx-border-width: 0 0 1 0; -fx-padding: 12 30;");
+    }
+
+    private void applyLightMode() {
+        contentBox.getParent().getParent().setStyle("-fx-background-color: #f8fafc;");
+        contentBox.setStyle("-fx-background-color: #f8fafc;");
+
+        contentBox.getScene().getRoot().lookup(".top > HBox")
+                .setStyle("-fx-background-color: white; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0; -fx-padding: 12 30;");
+    }
+
 
     @FXML
     private void handleDashboard() {
@@ -401,8 +443,8 @@ public class DashboardController implements Initializable {
     }
 
     private void setActive(Button btn) {
-        String inactiveStyle = "-fx-background-color: transparent; -fx-text-fill: #64748b; -fx-padding: 16 20; -fx-font-size: 14px; -fx-border-width: 0;";
-        String activeStyle = "-fx-background-color: #2c5ff6; -fx-text-fill: white; -fx-padding: 16 20; -fx-font-size: 14px; -fx-border-width: 0;";
+        String inactiveStyle = "-fx-background-color: transparent; -fx-text-fill: #64748b; -fx-padding: 10 18; -fx-font-size: 13px; -fx-border-width: 0; -fx-icon-color: #64748b;";
+        String activeStyle = "-fx-background-color: #2c5ff6; -fx-text-fill: white; -fx-padding: 10 18; -fx-font-size: 13px; -fx-border-width: 0; -fx-background-radius: 8; -fx-icon-color: white;";
 
         btnDashboard.setStyle(inactiveStyle);
         btnCars.setStyle(inactiveStyle);
@@ -411,6 +453,47 @@ public class DashboardController implements Initializable {
         btnComments.setStyle(inactiveStyle);
         btnSettings.setStyle(inactiveStyle);
         btnProfile.setStyle(inactiveStyle);
+
         btn.setStyle(activeStyle);
     }
+
+    private void setupNavigationIcons() {
+        FontIcon iconDashboard = new FontIcon("fas-chart-line");
+        iconDashboard.setIconSize(14);
+        iconDashboard.setIconColor(javafx.scene.paint.Color.WHITE);
+        btnDashboard.setGraphic(iconDashboard);
+        btnDashboard.setGraphicTextGap(8);
+
+        FontIcon iconCars = new FontIcon("fas-car");
+        iconCars.setIconSize(14);
+        iconCars.setIconColor(javafx.scene.paint.Color.WHITE);
+        btnCars.setGraphic(iconCars);
+        btnCars.setGraphicTextGap(8);
+
+        FontIcon iconRentals = new FontIcon("fas-key");
+        iconRentals.setIconSize(14);
+        iconRentals.setIconColor(javafx.scene.paint.Color.WHITE);
+        btnRentals.setGraphic(iconRentals);
+        btnRentals.setGraphicTextGap(8);
+
+        FontIcon iconInvoices = new FontIcon("fas-file-invoice");
+        iconInvoices.setIconSize(14);
+        iconInvoices.setIconColor(javafx.scene.paint.Color.WHITE);
+        btnInvoices.setGraphic(iconInvoices);
+        btnInvoices.setGraphicTextGap(8);
+
+        FontIcon iconComments = new FontIcon("fas-comments");
+        iconComments.setIconSize(14);
+        iconComments.setIconColor(javafx.scene.paint.Color.WHITE);
+        btnComments.setGraphic(iconComments);
+        btnComments.setGraphicTextGap(8);
+
+        FontIcon iconSettings = new FontIcon("fas-cog");
+        iconSettings.setIconSize(14);
+        iconSettings.setIconColor(javafx.scene.paint.Color.WHITE);
+        btnSettings.setGraphic(iconSettings);
+        btnSettings.setGraphicTextGap(8);
+    }
+
+
 }
