@@ -1,0 +1,49 @@
+/* ده اللي هيخلي القايمة المنسدلة مدورة تمامًا */
+.combo-box-popup > .list-view {
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 4);
+}
+
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
+    -fx-padding: 10 16;
+    -fx-background-radius: 8;
+}
+
+/* Hover جوه القائمة – خليها فاتحة والكلام واضح */
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:hover {
+    -fx-background-color: rgba(37, 99, 235, 0.10);  /* أزرق فاتح شفاف */
+    -fx-text-fill: #111827;                         /* تأكيد إن الكلام غامق وواضح */
+}
+
+/* Add Car hover – نفس الشكل بس أزرق أغمق */
+#btnAddCar:hover {
+    -fx-background-color: #1d4ed8 !important;
+}
+
+/* Cancel hover – أبيض برمادي فاتح شوية */
+#btnCancel:hover {
+    -fx-background-color: #f3f4f6 !important;
+}
+
+/* Upload Image hover – أزرق أغمق سنة */
+#btnUploadImage:hover {
+    -fx-background-color: #c7ddff !important;
+}
+/* 1) كيرسور يد + هافر لزرار Quick Actions (وكل الأزرار عموماً) */
+.button:hover {
+    -fx-cursor: hand;                /* شكل الماوس يد */
+}
+
+/* لو عايز هافر ناعم لأي زرار عادي مش مخصص */
+.button {
+    -fx-background-insets: 0;
+    -fx-effect: none;
+}
+
+.button:hover {
+    -fx-opacity: 0.96;               /* لمسة بسيطة جداً */
+}
+
+
+

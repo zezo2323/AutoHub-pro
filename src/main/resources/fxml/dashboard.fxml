@@ -4,80 +4,276 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.shape.Circle?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
-<BorderPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/17"
-            fx:controller="com.autohub.autohub.frontend.controllers.DashboardController"
-            style="-fx-background-color: #f8fafc;">
 
-    <!-- TOP NAVIGATION BAR -->
-    <top>
-        <HBox spacing="0" alignment="CENTER"
-              style="-fx-background-color: white; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0; -fx-padding: 0;">
-            <padding>
-                <Insets top="0" right="0" bottom="0" left="0"/>
-            </padding>
+<StackPane xmlns:fx="http://javafx.com/fxml/1"
+           xmlns="http://javafx.com/javafx/17"
+           fx:controller="com.autohub.autohub.frontend.controllers.DashboardController">
 
-            <!-- LOGO -->
-            <!-- LOGO -->
-            <HBox spacing="5" alignment="CENTER_LEFT" style="-fx-padding: 0 0 0 30;">
-                <StackPane minWidth="40" minHeight="40" maxWidth="40" maxHeight="40" prefWidth="40" prefHeight="40"
-                           style="-fx-background-color: #2c5ff6; -fx-background-radius: 10;">
-                    <FontIcon iconLiteral="fas-car" iconSize="22" fill="white"/>
-                </StackPane>
+    <!-- MAIN LAYOUT -->
+    <BorderPane fx:id="rootBorderPane"
+                style="-fx-background-color: #f8fafc;">
 
-                <VBox spacing="0" alignment="CENTER_LEFT">
-                    <Label text="DriveNow" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
-                    <Label text="Admin Panel" style="-fx-font-size: 10px; -fx-text-fill: #64748b;"/>
-                </VBox>
-            </HBox>
+        <!-- TOP NAVIGATION BAR -->
+        <top>
+            <HBox spacing="0" alignment="CENTER"
+                  style="-fx-background-color: white; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0; -fx-padding: 0;">
+                <padding>
+                    <Insets top="0" right="0" bottom="0" left="0"/>
+                </padding>
 
-            <Region HBox.hgrow="ALWAYS"/>
-            <!-- NAVIGATION BUTTONS -->
-            <HBox spacing="0" alignment="CENTER">
-                <Button fx:id="btnDashboard" text="Dashboard" onAction="#handleDashboard"/>
-                <Button fx:id="btnCars" text="Cars" onAction="#handleCars"/>
-                <Button fx:id="btnRentals" text="Rentals" onAction="#handleRentals"/>
-                <Button fx:id="btnInvoices" text="Invoices" onAction="#handleInvoices"/>
-                <Button fx:id="btnComments" text="Comments" onAction="#handleComments"/>
-                <Button fx:id="btnSettings" text="Settings" onAction="#handleSettings"/>
-                <Button fx:id="btnDarkMode" onAction="#toggleDarkMode"
-                        style="-fx-background-color: transparent; -fx-padding: 10 18; -fx-border-width: 0;">
+                <!-- LOGO -->
+                <HBox spacing="5" alignment="CENTER_LEFT" style="-fx-padding: 0 0 0 30;">
+                    <StackPane minWidth="40" minHeight="40" maxWidth="40" maxHeight="40" prefWidth="40" prefHeight="40"
+                               style="-fx-background-color: #2c5ff6; -fx-background-radius: 10;">
+                        <FontIcon iconLiteral="fas-car" iconSize="22" fill="white"/>
+                    </StackPane>
+
+                    <VBox spacing="0" alignment="CENTER_LEFT">
+                        <Label text="DriveNow"
+                               style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                        <Label text="Admin Panel" style="-fx-font-size: 10px; -fx-text-fill: #64748b;"/>
+                    </VBox>
+                </HBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- NAVIGATION BUTTONS -->
+                <HBox spacing="0" alignment="CENTER">
+                    <Button fx:id="btnDashboard" text="Dashboard" onAction="#handleDashboard"/>
+                    <Button fx:id="btnCars" text="Cars" onAction="#handleCars"/>
+                    <Button fx:id="btnRentals" text="Rentals" onAction="#handleRentals"/>
+                    <Button fx:id="btnInvoices" text="Invoices" onAction="#handleInvoices"/>
+                    <Button fx:id="btnComments" text="Reviews" onAction="#handleComments"/>
+                    <Button fx:id="btnUsers" text="Users" onAction="#handleUsers"/>
+                </HBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <Button fx:id="btnLogout" onAction="#handleLogout"
+                        style="-fx-background-color: transparent; -fx-padding: 0 16 0 0; -fx-border-width: 0;">
                     <graphic>
-                        <FontIcon fx:id="iconDarkMode" iconLiteral="fas-moon" iconSize="16" iconColor="#64748b"/>
+                        <FontIcon iconLiteral="fas-sign-out-alt" iconSize="18" iconColor="#64748b"/>
                     </graphic>
                 </Button>
 
+                <!-- ADMIN USER BUTTON -->
+                <Button fx:id="btnProfile" onAction="#handleProfile"
+                        style="-fx-background-color: transparent; -fx-padding: 8 12; -fx-background-radius: 50%;">
+                    <graphic>
+                        <StackPane prefWidth="48" prefHeight="48">
+                            <Circle stroke="#e5e7eb" strokeWidth="2" radius="22"
+                                    fill="linear-gradient(to bottom right, #3b82f6, #1d4ed8)" strokeType="outside"/>
+                            <FontIcon iconLiteral="fas-user" iconSize="24" fill="white"/>
+                        </StackPane>
+                    </graphic>
+                </Button>
 
-            </HBox>
-            <Region HBox.hgrow="ALWAYS"/>
-
-
-            <!-- ADMIN USER BUTTON -->
-            <Button fx:id="btnProfile" onAction="#handleProfile"
-                    style="-fx-background-color: transparent; -fx-padding: 8 12; -fx-background-radius: 50%;">
-                <graphic>
-                    <StackPane prefWidth="48" prefHeight="48">
-                        <Circle stroke="#e5e7eb" strokeWidth="2" radius="22"
-                                fill="linear-gradient(to bottom right, #3b82f6, #1d4ed8)" strokeType="outside"/>
-                        <FontIcon iconLiteral="fas-user" iconSize="24" fill="white"/>
-                        <Label text="AU" style="-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-                    </StackPane>
-                </graphic>
-            </Button>
-
-            <padding>
-                <Insets right="30"/>
-            </padding>
-        </HBox>
-    </top>
-
-    <!-- MAIN CONTENT -->
-    <center>
-        <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-border-width: 0; -fx-padding: 0;">
-            <VBox fx:id="contentBox" spacing="24" style="-fx-background-color: #f8fafc;">
                 <padding>
-                    <Insets top="32" right="40" bottom="40" left="40"/>
+                    <Insets right="30"/>
                 </padding>
-            </VBox>
-        </ScrollPane>
-    </center>
-</BorderPane>
+            </HBox>
+        </top>
+
+        <!-- MAIN CONTENT -->
+        <center>
+            <ScrollPane fitToWidth="true"
+                        style="-fx-background-color: transparent; -fx-border-width: 0; -fx-padding: 0;">
+                <VBox fx:id="contentBox" spacing="24" style="-fx-background-color: #f8fafc;">
+                    <padding>
+                        <Insets top="32" right="40" bottom="40" left="40"/>
+                    </padding>
+                </VBox>
+            </ScrollPane>
+        </center>
+
+    </BorderPane>
+
+    <!-- ADD CAR MODAL OVERLAY -->
+    <StackPane fx:id="modalOverlay" visible="false" pickOnBounds="true"
+               maxWidth="Infinity" maxHeight="Infinity"
+               style="-fx-background-color: rgba(15,23,42,0.55);">
+
+        <VBox fx:id="addCarModal" spacing="0" maxWidth="720" maxHeight="680"
+              style="-fx-background-color: #f9fafb; -fx-background-radius: 24; -fx-effect: dropshadow(gaussian, rgba(15,23,42,0.35), 24, 0, 0, 6);">
+
+            <!-- HEADER -->
+            <HBox alignment="CENTER_LEFT" spacing="20"
+                  style="-fx-background-color: white; -fx-padding: 24 28; -fx-border-width: 0 0 1 0; -fx-border-color: #e5e7eb;">
+                <VBox spacing="4" HBox.hgrow="ALWAYS">
+                    <Label text="Add New Car"
+                           style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #111827;"/>
+                    <Label text="Add a new car to your inventory"
+                           style="-fx-font-size: 13px; -fx-text-fill: #6b7280;"/>
+                </VBox>
+                <Button fx:id="btnCloseModal" onAction="#closeAddCarModal"
+                        style="-fx-background-color: #f3f4f6; -fx-text-fill: #6b7280; -fx-padding: 8; -fx-background-radius: 999; -fx-border-width: 0;">
+                    <graphic>
+                        <FontIcon iconLiteral="fas-times" iconSize="18"/>
+                    </graphic>
+                </Button>
+            </HBox>
+
+            <!-- FORM BODY -->
+            <ScrollPane fitToWidth="true" style="-fx-background-color: transparent; -fx-border-width: 0;">
+                <VBox spacing="20" style="-fx-padding: 24 28 24 28;">
+
+                    <!-- ROW 1: Brand + Car Name -->
+                    <HBox spacing="16">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Brand"
+                                   style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #111827;"/>
+                            <TextField fx:id="txtBrand" promptText="BMW"
+                                       prefHeight="44" maxWidth="Infinity"
+                                       style="-fx-background-color: #f9fafb; -fx-border-color: #e5e7eb; -fx-border-width: 1;
+                                              -fx-border-radius: 12; -fx-background-radius: 12;
+                                              -fx-padding: 0 16; -fx-font-size: 14px;"/>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Car Name"
+                                   style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #111827;"/>
+                            <TextField fx:id="txtCarName" promptText="BMW 5 Series"
+                                       prefHeight="44" maxWidth="Infinity"
+                                       style="-fx-background-color: #f9fafb; -fx-border-color: #e5e7eb; -fx-border-width: 1;
+                                              -fx-border-radius: 12; -fx-background-radius: 12;
+                                              -fx-padding: 0 16; -fx-font-size: 14px;"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- ROW 2: Year + Model -->
+                    <HBox spacing="16">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Year"
+                                   style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #111827;"/>
+                            <TextField fx:id="txtYear" promptText="2025"
+                                       prefHeight="44" maxWidth="Infinity"
+                                       style="-fx-background-color: #f9fafb; -fx-border-color: #e5e7eb; -fx-border-width: 1;
+                                              -fx-border-radius: 12; -fx-background-radius: 12;
+                                              -fx-padding: 0 16; -fx-font-size: 14px;"/>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Model"
+                                   style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #111827;"/>
+                            <TextField fx:id="txtModel" promptText="530i"
+                                       prefHeight="44" maxWidth="Infinity"
+                                       style="-fx-background-color: #f9fafb; -fx-border-color: #e5e7eb; -fx-border-width: 1;
+                                              -fx-border-radius: 12; -fx-background-radius: 12;
+                                              -fx-padding: 0 16; -fx-font-size: 14px;"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- ROW 3: Category (صف لوحده) -->
+                    <VBox spacing="8">
+                        <Label text="Category"
+                               style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #111827;"/>
+                        <ComboBox fx:id="cbCategory" promptText="Sedan"
+                                  prefHeight="44" maxWidth="Infinity"
+                                  style="-fx-background-color: #f9fafb;
+                                         -fx-border-color: #e5e7eb; -fx-border-width: 1;
+                                         -fx-border-radius: 12; -fx-background-radius: 12;
+                                         -fx-padding: 0 16 0 12;
+                                         -fx-font-size: 14px;"/>
+                    </VBox>
+
+                    <!-- ROW 4: Price Per Day + Seats (قصاد بعض) -->
+                    <HBox spacing="16">
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="($) Price Per Day"
+                                   style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #111827;"/>
+                            <TextField fx:id="txtPricePerDay" promptText="0"
+                                       prefHeight="44" maxWidth="Infinity"
+                                       style="-fx-background-color: #f9fafb; -fx-border-color: #e5e7eb; -fx-border-width: 1;
+                                              -fx-border-radius: 12; -fx-background-radius: 12;
+                                              -fx-padding: 0 16; -fx-font-size: 14px;"/>
+                        </VBox>
+                        <VBox spacing="8" HBox.hgrow="ALWAYS">
+                            <Label text="Seats"
+                                   style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #111827;"/>
+                            <TextField fx:id="txtSeats" promptText="5"
+                                       prefHeight="44" maxWidth="Infinity"
+                                       style="-fx-background-color: #f9fafb; -fx-border-color: #e5e7eb; -fx-border-width: 1;
+                                              -fx-border-radius: 12; -fx-background-radius: 12;
+                                              -fx-padding: 0 16; -fx-font-size: 14px;"/>
+                        </VBox>
+                    </HBox>
+
+                    <!-- ROW 5: Transmission (صف لوحده) -->
+                    <VBox spacing="8">
+                        <Label text="Transmission"
+                               style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #111827;"/>
+                        <ComboBox fx:id="cbTransmission" promptText="Automatic"
+                                  prefHeight="44" maxWidth="Infinity"
+                                  style="-fx-background-color: #f9fafb;
+                                         -fx-border-color: #e5e7eb; -fx-border-width: 1;
+                                         -fx-border-radius: 12; -fx-background-radius: 12;
+                                         -fx-padding: 0 16 0 12;
+                                         -fx-font-size: 14px;"/>
+                    </VBox>
+
+                    <!-- ROW 6: Fuel Type -->
+                    <VBox spacing="8">
+                        <Label text="Fuel Type"
+                               style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #111827;"/>
+                        <ComboBox fx:id="cbFuelType" promptText="Petrol"
+                                  prefHeight="44" maxWidth="Infinity"
+                                  style="-fx-background-color: #f9fafb; -fx-border-color: #e5e7eb; -fx-border-width: 1;
+                                         -fx-border-radius: 12; -fx-background-radius: 12;
+                                         -fx-padding: 0 12; -fx-font-size: 14px;"/>
+                    </VBox>
+
+                    <!-- ROW 7: Image URL + Upload -->
+                    <VBox spacing="8">
+                        <Label text="Image URL"
+                               style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #111827;"/>
+                        <HBox spacing="12">
+                            <TextField fx:id="txtImageUrl" promptText="http://..."
+                                       prefHeight="44" HBox.hgrow="ALWAYS"
+                                       style="-fx-background-color: #f9fafb; -fx-border-color: #e5e7eb; -fx-border-width: 1;
+                                              -fx-border-radius: 12; -fx-background-radius: 12;
+                                              -fx-padding: 0 16; -fx-font-size: 14px;"/>
+                            <Button fx:id="btnUploadImage" text="Upload Image" onAction="#handleUploadImage"
+                                    prefHeight="44"
+                                    style="-fx-background-color: #e0ecff; -fx-text-fill: #1d4ed8;
+                                           -fx-padding: 0 18; -fx-background-radius: 22; -fx-font-size: 13px; -fx-font-weight: 600;">
+                                <graphic>
+                                    <FontIcon iconLiteral="fas-upload" iconSize="14" iconColor="#1d4ed8"/>
+                                </graphic>
+                            </Button>
+                        </HBox>
+                    </VBox>
+
+                    <!-- ROW 8: Features -->
+                    <VBox spacing="8">
+                        <Label text="Features (comma separated)"
+                               style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #111827;"/>
+                        <TextField fx:id="txtFeatures" promptText="Leather Seats, Navigation, Sunroof"
+                                   prefHeight="44" maxWidth="Infinity"
+                                   style="-fx-background-color: #f9fafb; -fx-border-color: #e5e7eb; -fx-border-width: 1;
+                                          -fx-border-radius: 12; -fx-background-radius: 12;
+                                          -fx-padding: 0 16; -fx-font-size: 14px;"/>
+                    </VBox>
+
+                </VBox>
+            </ScrollPane>
+
+            <!-- FOOTER BUTTONS -->
+            <HBox spacing="16" alignment="CENTER_RIGHT"
+                  style="-fx-background-color: #f3f4f6; -fx-padding: 22 32; -fx-border-width: 1 0 0 0; -fx-border-color: #e5e7eb;">
+
+                <Button fx:id="btnCancel" text="Cancel" onAction="#closeAddCarModal"
+                        prefHeight="46" prefWidth="100"
+                        style="-fx-background-color: white; -fx-text-fill: #374151;
+                               -fx-border-color: #d1d5db; -fx-border-width: 1;
+                               -fx-background-radius: 23; -fx-border-radius: 23;
+                               -fx-font-size: 15px;"/>
+
+                <Button fx:id="btnAddCar" text="Add Car" onAction="#handleAddCar"
+                        prefHeight="46" prefWidth="120"
+                        style="-fx-background-color: #2563eb; -fx-text-fill: white;
+                               -fx-background-radius: 23;
+                               -fx-font-size: 15px; -fx-font-weight: bold;"/>
+            </HBox>
+
+        </VBox>
+    </StackPane>
+
+</StackPane>

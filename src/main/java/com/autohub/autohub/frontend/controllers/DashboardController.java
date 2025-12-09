@@ -3,10 +3,7 @@ package com.autohub.autohub.frontend.controllers;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
@@ -20,59 +17,120 @@ import java.util.ResourceBundle;
 
 public class DashboardController implements Initializable {
 
-    @FXML
-    private Button btnDarkMode;
-    @FXML
-    private FontIcon iconDarkMode;
-
-    private boolean isDarkMode = false;
-
+    private String selectedImagePath = "";
     @FXML
     private VBox contentBox;
     @FXML
-    private Button btnDashboard, btnCars, btnRentals, btnInvoices, btnComments, btnSettings;
+    private Button btnDashboard, btnCars, btnRentals, btnInvoices, btnComments, btnUsers;
     @FXML
     private Button btnProfile;
+    // في أول الكلاس بعد الـ variables الموجودة:
+    @FXML
+    private Button btnLogout;
+    @FXML
+    private StackPane modalOverlay;
+    @FXML
+    private TextField txtBrand, txtCarName, txtYear, txtModel, txtPricePerDay, txtSeats, txtImageUrl, txtFeatures;
+    @FXML
+    private ComboBox<String> cbCategory, cbTransmission, cbFuelType;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        loadDashboardContent();
         setupNavigationIcons();
+        loadDashboardContent();
+        setupComboBoxes();
     }
 
-    @FXML
-    private void toggleDarkMode() {
-        isDarkMode = !isDarkMode;
+    private void setupComboBoxes() {
+        // لو الـ modal لسه متحمّلش، الـ controls هتبقى null
+        if (cbCategory == null) {
+            return;
+        }
 
-        if (isDarkMode) {
-            applyDarkMode();
-            iconDarkMode.setIconLiteral("fas-sun");
-            iconDarkMode.setIconColor(javafx.scene.paint.Color.web("#fbbf24"));
-        } else {
-            applyLightMode();
-            iconDarkMode.setIconLiteral("fas-moon");
-            iconDarkMode.setIconColor(javafx.scene.paint.Color.web("#64748b"));
+        cbCategory.getItems().setAll("Sedan", "SUV", "Hatchback", "Coupe", "Convertible", "Truck");
+        cbTransmission.getItems().setAll("Automatic", "Manual");
+        cbFuelType.getItems().setAll("Petrol", "Diesel", "Electric", "Hybrid");
+
+    }
+
+
+    private void setupNavigationIcons() {
+        FontIcon iconDashboard = new FontIcon("fas-chart-line");
+        iconDashboard.setIconSize(14);
+        iconDashboard.setIconColor(Color.WHITE);
+        btnDashboard.setGraphic(iconDashboard);
+        btnDashboard.setGraphicTextGap(8);
+
+        FontIcon iconCars = new FontIcon("fas-car");
+        iconCars.setIconSize(14);
+        iconCars.setIconColor(Color.web("#64748b"));
+        btnCars.setGraphic(iconCars);
+        btnCars.setGraphicTextGap(8);
+
+        FontIcon iconRentals = new FontIcon("fas-key");
+        iconRentals.setIconSize(14);
+        iconRentals.setIconColor(Color.web("#64748b"));
+        btnRentals.setGraphic(iconRentals);
+        btnRentals.setGraphicTextGap(8);
+
+        FontIcon iconInvoices = new FontIcon("fas-file-invoice");
+        iconInvoices.setIconSize(14);
+        iconInvoices.setIconColor(Color.web("#64748b"));
+        btnInvoices.setGraphic(iconInvoices);
+        btnInvoices.setGraphicTextGap(8);
+
+        FontIcon iconComments = new FontIcon("fas-star-half-alt");
+        iconComments.setIconSize(14);
+        iconComments.setIconColor(Color.web("#64748b"));
+        btnComments.setGraphic(iconComments);
+        btnComments.setGraphicTextGap(8);
+
+        FontIcon iconUsers = new FontIcon("fas-users-cog");
+        iconUsers.setIconSize(14);
+        iconUsers.setIconColor(Color.web("#64748b"));
+        btnUsers.setGraphic(iconUsers);
+        btnUsers.setGraphicTextGap(8);
+    }
+
+    private void updateIconColors() {
+        if (btnDashboard.getGraphic() != null)
+            ((FontIcon) btnDashboard.getGraphic()).setIconColor(Color.web("#64748b"));
+        if (btnCars.getGraphic() != null)
+            ((FontIcon) btnCars.getGraphic()).setIconColor(Color.web("#64748b"));
+        if (btnRentals.getGraphic() != null)
+            ((FontIcon) btnRentals.getGraphic()).setIconColor(Color.web("#64748b"));
+        if (btnInvoices.getGraphic() != null)
+            ((FontIcon) btnInvoices.getGraphic()).setIconColor(Color.web("#64748b"));
+        if (btnComments.getGraphic() != null)
+            ((FontIcon) btnComments.getGraphic()).setIconColor(Color.web("#64748b"));
+        if (btnUsers.getGraphic() != null)
+            ((FontIcon) btnUsers.getGraphic()).setIconColor(Color.web("#64748b"));
+    }
+
+    private void setActiveWithIcon(Button btn) {
+        updateIconColors();
+        setActive(btn);
+
+        if (btn.getGraphic() != null && btn.getGraphic() instanceof FontIcon) {
+            ((FontIcon) btn.getGraphic()).setIconColor(Color.WHITE);
         }
     }
 
-    private void applyDarkMode() {
-        // الخلفية الرئيسية
-        contentBox.getParent().getParent().setStyle("-fx-background-color: #0f172a;");
-        contentBox.setStyle("-fx-background-color: #0f172a;");
+    private void setActive(Button btn) {
+        String inactiveStyle = "-fx-background-color: transparent; -fx-text-fill: #64748b; -fx-padding: 10 18; -fx-font-size: 13px; -fx-border-width: 0;";
+        String activeStyle = "-fx-background-color: #2c5ff6; -fx-text-fill: white; -fx-padding: 10 18; -fx-font-size: 13px; -fx-border-width: 0; -fx-background-radius: 8;";
 
-        // الناف بار
-        contentBox.getScene().getRoot().lookup(".top > HBox")
-                .setStyle("-fx-background-color: #1e293b; -fx-border-color: #334155; -fx-border-width: 0 0 1 0; -fx-padding: 12 30;");
+        btnDashboard.setStyle(inactiveStyle);
+        btnCars.setStyle(inactiveStyle);
+        btnRentals.setStyle(inactiveStyle);
+        btnInvoices.setStyle(inactiveStyle);
+        btnComments.setStyle(inactiveStyle);
+        btnUsers.setStyle(inactiveStyle);
+        btnProfile.setStyle(inactiveStyle);
+
+        btn.setStyle(activeStyle);
     }
-
-    private void applyLightMode() {
-        contentBox.getParent().getParent().setStyle("-fx-background-color: #f8fafc;");
-        contentBox.setStyle("-fx-background-color: #f8fafc;");
-
-        contentBox.getScene().getRoot().lookup(".top > HBox")
-                .setStyle("-fx-background-color: white; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0; -fx-padding: 12 30;");
-    }
-
 
     @FXML
     private void handleDashboard() {
@@ -81,40 +139,68 @@ public class DashboardController implements Initializable {
 
     @FXML
     private void handleCars() {
-        setActive(btnCars);
+        setActiveWithIcon(btnCars);
         contentBox.getChildren().clear();
+        Label placeholder = new Label("Cars Page - Coming Soon!");
+        placeholder.setStyle("-fx-font-size: 24px; -fx-text-fill: #64748b;");
+        contentBox.getChildren().add(placeholder);
     }
 
     @FXML
     private void handleRentals() {
-        setActive(btnRentals);
+        setActiveWithIcon(btnRentals);
         contentBox.getChildren().clear();
+        Label placeholder = new Label("Rentals Page - Coming Soon!");
+        placeholder.setStyle("-fx-font-size: 24px; -fx-text-fill: #64748b;");
+        contentBox.getChildren().add(placeholder);
     }
 
     @FXML
     private void handleInvoices() {
-        setActive(btnInvoices);
+        setActiveWithIcon(btnInvoices);
         contentBox.getChildren().clear();
+        Label placeholder = new Label("Invoices Page - Coming Soon!");
+        placeholder.setStyle("-fx-font-size: 24px; -fx-text-fill: #64748b;");
+        contentBox.getChildren().add(placeholder);
     }
 
     @FXML
     private void handleComments() {
-        setActive(btnComments);
+        setActiveWithIcon(btnComments);
         contentBox.getChildren().clear();
+        Label placeholder = new Label("Reviews Page - Coming Soon!");
+        placeholder.setStyle("-fx-font-size: 24px; -fx-text-fill: #64748b;");
+        contentBox.getChildren().add(placeholder);
     }
 
     @FXML
-    private void handleSettings() {
-        setActive(btnSettings);
+    private void handleUsers() {
+        setActiveWithIcon(btnUsers);
         contentBox.getChildren().clear();
+        Label placeholder = new Label("Users Management Page - Coming Soon!");
+        placeholder.setStyle("-fx-font-size: 24px; -fx-text-fill: #64748b;");
+        contentBox.getChildren().add(placeholder);
+    }
+
+    @FXML
+    private void handleLogout() {
+        try {
+            javafx.scene.Parent root = javafx.fxml.FXMLLoader.load(
+                    getClass().getResource("/fxml/login.fxml")
+            );
+            javafx.stage.Stage stage = (javafx.stage.Stage) contentBox.getScene().getWindow();
+            stage.setScene(new javafx.scene.Scene(root));
+            stage.centerOnScreen();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @FXML
     private void handleProfile() {
-        setActive(btnProfile); // خليها active زي التانيين
+        setActiveWithIcon(btnProfile);
         contentBox.getChildren().clear();
 
-        // Profile Header
         HBox header = new HBox(20);
         header.setAlignment(Pos.CENTER_LEFT);
 
@@ -133,11 +219,9 @@ public class DashboardController implements Initializable {
         header.getChildren().addAll(titleBox, backBtn);
         contentBox.getChildren().add(header);
 
-        // Profile Card
         VBox profileCard = new VBox(20);
         profileCard.setStyle("-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 32; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);");
 
-        // Avatar Section
         HBox avatarSection = new HBox(20);
         avatarSection.setAlignment(Pos.CENTER_LEFT);
 
@@ -148,7 +232,7 @@ public class DashboardController implements Initializable {
         avatarCircle.setStroke(Color.web("#2563eb"));
         FontIcon avatarIcon = new FontIcon("fas-user");
         avatarIcon.setIconSize(32);
-        avatarIcon.setIconColor(Color.WHITE);
+        avatarIcon.setIconColor(Color.web("#2563eb"));
         avatar.getChildren().addAll(avatarCircle, avatarIcon);
 
         VBox infoSection = new VBox(12);
@@ -160,14 +244,11 @@ public class DashboardController implements Initializable {
 
         avatarSection.getChildren().addAll(avatar, infoSection);
 
-        // Form Fields
         VBox form = new VBox(20);
-
         createFormField(form, "Full Name", "Admin User", true);
         createFormField(form, "Email", "admin@drivenow.com", true);
         createFormField(form, "Phone", "+20 123 456 789", false);
 
-        // Save Button
         Button saveBtn = new Button("Save Changes");
         saveBtn.setStyle("-fx-background-color: #2563eb; -fx-text-fill: white; -fx-padding: 16 32; -fx-background-radius: 8; -fx-font-size: 16px; -fx-font-weight: bold;");
         saveBtn.setOnAction(e -> {
@@ -178,47 +259,29 @@ public class DashboardController implements Initializable {
         });
 
         form.getChildren().add(saveBtn);
-
         profileCard.getChildren().addAll(avatarSection, form);
         contentBox.getChildren().add(profileCard);
     }
 
-
-    // Helper method - أضفها في آخر الكلاس قبل }
     private void createFormField(VBox parent, String labelText, String valueText, boolean editable) {
         VBox fieldBox = new VBox(8);
-
         Label label = new Label(labelText + ":");
         label.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #374151;");
-
         TextField field = new TextField(valueText);
         field.setEditable(editable);
         field.setStyle("-fx-background-color: #f9fafb; -fx-border-color: #d1d5db; -fx-border-width: 1 1 2 1; -fx-border-radius: 8; -fx-padding: 12 16; -fx-font-size: 14px;");
-
         fieldBox.getChildren().addAll(label, field);
         parent.getChildren().add(fieldBox);
     }
 
-
     private void loadDashboardContent() {
         contentBox.getChildren().clear();
-        setActive(btnDashboard);
+        setActiveWithIcon(btnDashboard);
 
-        // HEADER WITH TITLE AND BUTTONS
-        HBox header = createHeader();
-        contentBox.getChildren().add(header);
-
-        // STATISTICS CARDS
-        HBox statsRow = createStatsRow();
-        contentBox.getChildren().add(statsRow);
-
-        // QUICK ACTIONS
-        VBox quickActions = createQuickActions();
-        contentBox.getChildren().add(quickActions);
-
-        // FLEET MANAGEMENT
-        VBox fleetSection = createFleetSection();
-        contentBox.getChildren().add(fleetSection);
+        contentBox.getChildren().add(createHeader());
+        contentBox.getChildren().add(createStatsRow());
+        contentBox.getChildren().add(createQuickActions());
+        contentBox.getChildren().add(createFleetSection());
     }
 
     private HBox createHeader() {
@@ -234,43 +297,57 @@ public class DashboardController implements Initializable {
 
         HBox.setHgrow(textBox, Priority.ALWAYS);
 
+        // في الـ method createHeader() غيّر الزرار Add Car:
+
         Button addBtn = new Button("Add Car");
-        addBtn.setGraphic(new FontIcon("fas-plus"));
-        addBtn.setStyle("-fx-background-color: #2c5ff6; -fx-text-fill: white; -fx-padding: 12 24; -fx-font-size: 14px; -fx-background-radius: 8;");
+        FontIcon addIcon = new FontIcon("fas-plus");
+        addIcon.setIconSize(14);
+        addIcon.setIconColor(Color.WHITE);
+        addBtn.setGraphic(addIcon);
+        addBtn.setGraphicTextGap(8);
+        addBtn.setStyle("-fx-background-color: #2c5ff6; -fx-text-fill: white; -fx-padding: 12 24; -fx-font-size: 14px; -fx-background-radius: 8; -fx-cursor: hand;");
+        addBtn.setOnAction(e -> openAddCarModal());
 
         Button invoiceBtn = new Button("Invoices");
-        invoiceBtn.setStyle("-fx-background-color: white; -fx-text-fill: #0f172a; -fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-padding: 12 24; -fx-font-size: 14px; -fx-background-radius: 8;");
+        FontIcon invoiceIcon = new FontIcon("fas-file-invoice");
+        invoiceIcon.setIconSize(14);
+        invoiceIcon.setIconColor(Color.web("#0f172a"));
+        invoiceBtn.setGraphic(invoiceIcon);
+        invoiceBtn.setGraphicTextGap(8);
+        invoiceBtn.setStyle("-fx-background-color: white; -fx-text-fill: #0f172a; -fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-padding: 12 24; -fx-font-size: 14px; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2); -fx-cursor: hand;");
 
         header.getChildren().addAll(textBox, addBtn, invoiceBtn);
         return header;
     }
 
     private HBox createStatsRow() {
-        HBox row = new HBox(20);
+        HBox row = new HBox(16);
         row.setAlignment(Pos.CENTER_LEFT);
 
-        row.getChildren().addAll(
-                createStatCard("Total Cars", "6", "In fleet", "fas-car", "#2c5ff6"),
-                createStatCard("Cars Rented", "2", "Currently active", "fas-key", "#f59e0b"),
-                createStatCard("Revenue Today", "$2,450", "+15% from yesterday", "fas-dollar-sign", "#10b981"),
-                createStatCard("Active Rentals", "2", "Ongoing contracts", "fas-chart-line", "#8b5cf6")
-        );
+        VBox statCard1 = createStatCard("Total Cars", "6", "In fleet", "fas-car", "#2c5ff6");
+        VBox statCard2 = createStatCard("Cars Rented", "2", "Currently active", "fas-key", "#f59e0b");
+        VBox statCard3 = createStatCard("Revenue Today", "$2,450", "+15% from yesterday", "fas-dollar-sign", "#10b981");
+        VBox statCard4 = createStatCard("Active Rentals", "2", "Ongoing contracts", "fas-chart-line", "#8b5cf6");
 
+        HBox.setHgrow(statCard1, Priority.ALWAYS);
+        HBox.setHgrow(statCard2, Priority.ALWAYS);
+        HBox.setHgrow(statCard3, Priority.ALWAYS);
+        HBox.setHgrow(statCard4, Priority.ALWAYS);
+
+        row.getChildren().addAll(statCard1, statCard2, statCard3, statCard4);
         return row;
     }
 
     private VBox createStatCard(String label, String value, String description, String icon, String color) {
         VBox card = new VBox(12);
         card.setStyle("-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 24; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 3);");
-        card.setPrefWidth(240);
+        card.setMaxWidth(Double.MAX_VALUE);
 
-        // ICON
         FontIcon iconNode = new FontIcon(icon);
         iconNode.setIconSize(40);
         iconNode.setIconColor(Color.valueOf(color));
         iconNode.setOpacity(0.15);
 
-        // TEXT
         Label labelLbl = new Label(label);
         labelLbl.setStyle("-fx-font-size: 12px; -fx-text-fill: #64748b; -fx-font-weight: normal;");
 
@@ -280,7 +357,6 @@ public class DashboardController implements Initializable {
         Label descLbl = new Label(description);
         descLbl.setStyle("-fx-font-size: 12px; -fx-text-fill: #94a3b8;");
 
-        // LAYOUT
         HBox content = new HBox(16);
         content.setAlignment(Pos.CENTER_LEFT);
         VBox textBox = new VBox(4, labelLbl, valueLbl, descLbl);
@@ -302,11 +378,18 @@ public class DashboardController implements Initializable {
         desc.setStyle("-fx-font-size: 13px; -fx-text-fill: #64748b;");
 
         HBox buttonsBox = new HBox(16);
-        buttonsBox.getChildren().addAll(
-                createActionButton("fas-plus-circle", "Add New Car"),
-                createActionButton("fas-eye", "View Rentals"),
-                createActionButton("fas-file-alt", "Generate Invoice")
-        );
+
+
+        Button btn1 = createActionButton("fas-plus-circle", "Add New Car");
+        btn1.setOnAction(e -> openAddCarModal());  // ← ضيف دي
+        Button btn2 = createActionButton("fas-eye", "View Rentals");
+        Button btn3 = createActionButton("fas-file-alt", "Generate Invoice");
+
+        HBox.setHgrow(btn1, Priority.ALWAYS);
+        HBox.setHgrow(btn2, Priority.ALWAYS);
+        HBox.setHgrow(btn3, Priority.ALWAYS);
+
+        buttonsBox.getChildren().addAll(btn1, btn2, btn3);
 
         section.getChildren().addAll(title, desc, buttonsBox);
         return section;
@@ -314,12 +397,14 @@ public class DashboardController implements Initializable {
 
     private Button createActionButton(String icon, String text) {
         Button btn = new Button();
+        btn.setMaxWidth(Double.MAX_VALUE);
+
         VBox container = new VBox(12);
         container.setAlignment(Pos.CENTER);
-        container.setPrefWidth(300);
+        container.setMaxWidth(Double.MAX_VALUE);
 
         FontIcon iconNode = new FontIcon(icon);
-        iconNode.setIconSize(32);
+        iconNode.setIconSize(24);
         iconNode.setIconColor(Color.web("#0f172a"));
 
         Label textLbl = new Label(text);
@@ -336,7 +421,6 @@ public class DashboardController implements Initializable {
         VBox section = new VBox(16);
         section.setStyle("-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 24; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 3);");
 
-        // HEADER
         HBox headerBox = new HBox();
         headerBox.setAlignment(Pos.CENTER_LEFT);
 
@@ -355,22 +439,20 @@ public class DashboardController implements Initializable {
         headerBox.getChildren().addAll(titleBox, viewAllBtn);
         section.getChildren().add(headerBox);
 
-        // CAR CARDS
         VBox carsBox = new VBox(16);
         carsBox.getChildren().addAll(
-                createCarCard("Tesla Model S", "Luxury Sedan", "2024", "Automatic", "Electric", "5 Seats", "$120/day", "Available", "#10b981", "tesla"),
-                createCarCard("Range Rover Sport", "Luxury SUV", "2023", "Automatic", "Diesel", "7 Seats", "$150/day", "Rented", "#f59e0b", "rangerover")
+                createCarCard("Tesla Model S", "Luxury Sedan", "2024", "Automatic", "Electric", "5 Seats", "$120/day", "Available", "#10b981"),
+                createCarCard("Range Rover Sport", "Luxury SUV", "2023", "Automatic", "Diesel", "7 Seats", "$150/day", "Rented", "#f59e0b")
         );
 
         section.getChildren().add(carsBox);
         return section;
     }
 
-    private HBox createCarCard(String name, String type, String year, String trans, String fuel, String seats, String price, String status, String statusColor, String carType) {
+    private HBox createCarCard(String name, String type, String year, String trans, String fuel, String seats, String price, String status, String statusColor) {
         HBox card = new HBox(20);
         card.setStyle("-fx-background-color: #f8fafc; -fx-background-radius: 12; -fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-padding: 20;");
 
-        // CAR IMAGE PLACEHOLDER
         VBox imageBox = new VBox();
         imageBox.setPrefSize(140, 100);
         imageBox.setStyle("-fx-background-color: #e2e8f0; -fx-background-radius: 8;");
@@ -381,7 +463,6 @@ public class DashboardController implements Initializable {
         carIcon.setIconColor(Color.web("#64748b"));
         imageBox.getChildren().add(carIcon);
 
-        // CAR INFO
         VBox infoBox = new VBox(8);
         Label nameLbl = new Label(name);
         nameLbl.setStyle("-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #0f172a;");
@@ -399,7 +480,6 @@ public class DashboardController implements Initializable {
         infoBox.getChildren().addAll(nameLbl, typeLbl, specsBox);
         HBox.setHgrow(infoBox, Priority.ALWAYS);
 
-        // PRICE AND STATUS
         VBox priceBox = new VBox(8);
         priceBox.setAlignment(Pos.CENTER_RIGHT);
         Label priceLbl = new Label(price);
@@ -409,7 +489,6 @@ public class DashboardController implements Initializable {
         statusLbl.setStyle("-fx-background-color: " + statusColor + "; -fx-text-fill: white; -fx-padding: 6 16; -fx-background-radius: 20; -fx-font-size: 12px; -fx-font-weight: bold;");
         priceBox.getChildren().addAll(priceLbl, statusLbl);
 
-        // ACTIONS
         VBox actionsBox = new VBox(8);
         actionsBox.setAlignment(Pos.CENTER_RIGHT);
 
@@ -442,57 +521,73 @@ public class DashboardController implements Initializable {
         return spec;
     }
 
-    private void setActive(Button btn) {
-        String inactiveStyle = "-fx-background-color: transparent; -fx-text-fill: #64748b; -fx-padding: 10 18; -fx-font-size: 13px; -fx-border-width: 0; -fx-icon-color: #64748b;";
-        String activeStyle = "-fx-background-color: #2c5ff6; -fx-text-fill: white; -fx-padding: 10 18; -fx-font-size: 13px; -fx-border-width: 0; -fx-background-radius: 8; -fx-icon-color: white;";
-
-        btnDashboard.setStyle(inactiveStyle);
-        btnCars.setStyle(inactiveStyle);
-        btnRentals.setStyle(inactiveStyle);
-        btnInvoices.setStyle(inactiveStyle);
-        btnComments.setStyle(inactiveStyle);
-        btnSettings.setStyle(inactiveStyle);
-        btnProfile.setStyle(inactiveStyle);
-
-        btn.setStyle(activeStyle);
+    @FXML
+    private void openAddCarModal() {
+        modalOverlay.setVisible(true);
     }
 
-    private void setupNavigationIcons() {
-        FontIcon iconDashboard = new FontIcon("fas-chart-line");
-        iconDashboard.setIconSize(14);
-        iconDashboard.setIconColor(javafx.scene.paint.Color.WHITE);
-        btnDashboard.setGraphic(iconDashboard);
-        btnDashboard.setGraphicTextGap(8);
+    @FXML
+    private void closeAddCarModal() {
+        modalOverlay.setVisible(false);
+        clearForm();
+    }
 
-        FontIcon iconCars = new FontIcon("fas-car");
-        iconCars.setIconSize(14);
-        iconCars.setIconColor(javafx.scene.paint.Color.WHITE);
-        btnCars.setGraphic(iconCars);
-        btnCars.setGraphicTextGap(8);
+    private void clearForm() {
+        txtBrand.clear();
+        txtCarName.clear();
+        txtYear.clear();
+        txtModel.clear();
+        txtPricePerDay.clear();
+        txtSeats.clear();
+        txtImageUrl.clear();
+        txtFeatures.clear();
+        cbCategory.setValue(null);
+        cbTransmission.setValue(null);
+        cbFuelType.setValue(null);
+        selectedImagePath = "";
+    }
 
-        FontIcon iconRentals = new FontIcon("fas-key");
-        iconRentals.setIconSize(14);
-        iconRentals.setIconColor(javafx.scene.paint.Color.WHITE);
-        btnRentals.setGraphic(iconRentals);
-        btnRentals.setGraphicTextGap(8);
+    @FXML
+    private void handleUploadImage() {
+        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+        fileChooser.setTitle("Select Car Image");
+        fileChooser.getExtensionFilters().addAll(
+                new javafx.stage.FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
+        );
 
-        FontIcon iconInvoices = new FontIcon("fas-file-invoice");
-        iconInvoices.setIconSize(14);
-        iconInvoices.setIconColor(javafx.scene.paint.Color.WHITE);
-        btnInvoices.setGraphic(iconInvoices);
-        btnInvoices.setGraphicTextGap(8);
+        javafx.stage.Stage stage = (javafx.stage.Stage) modalOverlay.getScene().getWindow();
+        java.io.File selectedFile = fileChooser.showOpenDialog(stage);
 
-        FontIcon iconComments = new FontIcon("fas-comments");
-        iconComments.setIconSize(14);
-        iconComments.setIconColor(javafx.scene.paint.Color.WHITE);
-        btnComments.setGraphic(iconComments);
-        btnComments.setGraphicTextGap(8);
+        if (selectedFile != null) {
+            selectedImagePath = selectedFile.getAbsolutePath();
+            txtImageUrl.setText(selectedImagePath);
 
-        FontIcon iconSettings = new FontIcon("fas-cog");
-        iconSettings.setIconSize(14);
-        iconSettings.setIconColor(javafx.scene.paint.Color.WHITE);
-        btnSettings.setGraphic(iconSettings);
-        btnSettings.setGraphicTextGap(8);
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setHeaderText("Image Selected!");
+            alert.setContentText("Image path: " + selectedImagePath);
+            alert.showAndWait();
+        }
+    }
+
+    @FXML
+    private void handleAddCar() {
+        // Validation
+        if (txtBrand.getText().isEmpty() || txtCarName.getText().isEmpty()) {
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setHeaderText("Missing Information");
+            alert.setContentText("Please fill in all required fields!");
+            alert.showAndWait();
+            return;
+        }
+
+        // Success message
+        Alert success = new Alert(Alert.AlertType.INFORMATION);
+        success.setHeaderText("✅ Car Added!");
+        success.setContentText("Car has been added successfully to your inventory.");
+        success.showAndWait();
+
+        closeAddCarModal();
+        loadDashboardContent(); // Refresh dashboard
     }
 
 
