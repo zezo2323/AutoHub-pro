@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx/17"
+            fx:controller="com.autohub.autohub.frontend.controllers.CarsController"
+            style="-fx-background-color: #f8fafc;">
+
+    <center>
+        <VBox spacing="24" style="-fx-padding: 32 40 40 40;">
+
+            <!-- HEADER ROW -->
+            <HBox spacing="16" alignment="CENTER_LEFT">
+                <Button fx:id="btnAddNewCarTop"
+                        text="Add New Car"
+                        style="-fx-background-color: #111827; -fx-text-fill: white;
+                               -fx-font-size: 14px; -fx-font-weight: bold;
+                               -fx-padding: 10 20; -fx-background-radius: 999;">
+                    <graphic>
+                        <FontIcon iconLiteral="fas-plus" iconSize="14" iconColor="white"/>
+                    </graphic>
+                </Button>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <VBox spacing="4" alignment="CENTER_RIGHT">
+                    <Label text="Cars Management"
+                           style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #111827;"/>
+                    <Label text="Manage your car inventory"
+                           style="-fx-font-size: 13px; -fx-text-fill: #6b7280;"/>
+                </VBox>
+            </HBox>
+
+            <!-- PLACEHOLDER لجدول العربيات (هنملاه بعدين) -->
+            <Label text="Cars table will be here..."
+                   style="-fx-text-fill: #9ca3af; -fx-font-size: 14px;"/>
+
+        </VBox>
+    </center>
+</BorderPane>

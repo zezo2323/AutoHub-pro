@@ -19,9 +19,10 @@ public class App extends Application {
                 App.class.getResource("/fxml/dashboard.fxml")
         );
 
-        Scene scene = new Scene(fxmlLoader.load(), 1400, 900);
+        Scene scene = new Scene(fxmlLoader.load(), 1400, 800
+        );
 
-        // ربط ملف الـ CSS (اتأكد من المسار)
+
         scene.getStylesheets().add(
                 App.class.getResource("/styles/app.css").toExternalForm()
         );
