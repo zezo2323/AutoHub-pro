@@ -19,7 +19,7 @@ public class App extends Application {
                 App.class.getResource("/fxml/dashboard.fxml")
         );
 
-        Scene scene = new Scene(fxmlLoader.load(), 1400, 800
+        Scene scene = new Scene(fxmlLoader.load(), 1200, 600
         );
 
 
