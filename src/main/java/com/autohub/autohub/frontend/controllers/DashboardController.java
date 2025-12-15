@@ -1,5 +1,7 @@
 package com.autohub.autohub.frontend.controllers;
 
+import com.autohub.autohub.backend.models.Car;
+import com.autohub.autohub.backend.models.CarStoreTemp;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -16,7 +18,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class DashboardController implements Initializable {
-
+    private static DashboardController instance;
     private String selectedImagePath = "";
     @FXML
     private VBox contentBox;
@@ -34,6 +36,17 @@ public class DashboardController implements Initializable {
     @FXML
     private ComboBox<String> cbCategory, cbTransmission, cbFuelType;
 
+    public DashboardController() {
+        instance = this;
+    }
+
+    public static DashboardController getInstance() {
+        return instance;
+    }
+
+    public void openAddCarModalPublic() {
+        modalOverlay.setVisible(true);
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -141,10 +154,21 @@ public class DashboardController implements Initializable {
     private void handleCars() {
         setActiveWithIcon(btnCars);
         contentBox.getChildren().clear();
-        Label placeholder = new Label("Cars Page - Coming Soon!");
-        placeholder.setStyle("-fx-font-size: 24px; -fx-text-fill: #64748b;");
-        contentBox.getChildren().add(placeholder);
+
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("/fxml/cars.fxml")
+            );
+            javafx.scene.Parent carsRoot = loader.load();
+            contentBox.getChildren().add(carsRoot);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Label error = new Label("Failed to load Cars page");
+            error.setStyle("-fx-text-fill: red;");
+            contentBox.getChildren().add(error);
+        }
     }
+
 
     @FXML
     private void handleRentals() {
@@ -524,6 +548,7 @@ public class DashboardController implements Initializable {
     @FXML
     private void openAddCarModal() {
         modalOverlay.setVisible(true);
+
     }
 
     @FXML
@@ -571,23 +596,32 @@ public class DashboardController implements Initializable {
 
     @FXML
     private void handleAddCar() {
-        // Validation
         if (txtBrand.getText().isEmpty() || txtCarName.getText().isEmpty()) {
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setHeaderText("Missing Information");
-            alert.setContentText("Please fill in all required fields!");
+            alert.setContentText("Please fill in Brand and Car Name at least.");
             alert.showAndWait();
             return;
         }
 
-        // Success message
+        // هنستخدم Car الحالي بشكل مبسط (لو مفيش constructor مظبوط هنعدّله بعدين)
+        Car car = new Car();
+        car.setName(txtCarName.getText());
+        car.setType(cbCategory.getValue() == null ? "" : cbCategory.getValue());
+        car.setYear(txtYear.getText());
+        car.setFuel(cbFuelType.getValue() == null ? "" : cbFuelType.getValue());
+        car.setSeats(txtSeats.getText());
+        car.setStatus("Available"); // مؤقتًا
+        car.setPricePerDay(txtPricePerDay.getText());
+
+        CarStoreTemp.addCar(car);
+
         Alert success = new Alert(Alert.AlertType.INFORMATION);
-        success.setHeaderText("✅ Car Added!");
-        success.setContentText("Car has been added successfully to your inventory.");
+        success.setHeaderText("Car Added");
+        success.setContentText("Car has been added to your inventory (temp store).");
         success.showAndWait();
 
         closeAddCarModal();
-        loadDashboardContent(); // Refresh dashboard
     }
 
 

@@ -14,29 +14,43 @@
 
             <!-- HEADER ROW -->
             <HBox spacing="16" alignment="CENTER_LEFT">
-                <Button fx:id="btnAddNewCarTop"
-                        text="Add New Car"
-                        style="-fx-background-color: #111827; -fx-text-fill: white;
-                               -fx-font-size: 14px; -fx-font-weight: bold;
-                               -fx-padding: 10 20; -fx-background-radius: 999;">
-                    <graphic>
-                        <FontIcon iconLiteral="fas-plus" iconSize="14" iconColor="white"/>
-                    </graphic>
-                </Button>
-
-                <Region HBox.hgrow="ALWAYS"/>
-
-                <VBox spacing="4" alignment="CENTER_RIGHT">
+                <!-- العنوان والوصف على الشمال -->
+                <VBox spacing="4" alignment="CENTER_LEFT">
                     <Label text="Cars Management"
                            style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #111827;"/>
                     <Label text="Manage your car inventory"
                            style="-fx-font-size: 13px; -fx-text-fill: #6b7280;"/>
                 </VBox>
+
+                <Region HBox.hgrow="ALWAYS"/>
+
+                <!-- الزرار على اليمين بنفس استايل الداشبورد (أزرق في أبيض) -->
+                <Button fx:id="btnAddNewCarTop"
+                        text="Add New Car"
+                        onAction="#handleAddNewCarTop"
+                        style="-fx-background-color: #2563eb; -fx-text-fill: white;
+                               -fx-font-size: 14px; -fx-font-weight: bold;
+                               -fx-padding: 10 22; -fx-background-radius: 999;">
+                    <graphic>
+                        <FontIcon iconLiteral="fas-plus" iconSize="14" iconColor="white"/>
+                    </graphic>
+                </Button>
             </HBox>
 
-            <!-- PLACEHOLDER لجدول العربيات (هنملاه بعدين) -->
-            <Label text="Cars table will be here..."
-                   style="-fx-text-fill: #9ca3af; -fx-font-size: 14px;"/>
+            <!-- جدول العربيات -->
+            <TableView fx:id="carsTable"
+                       prefHeight="500">
+                <columns>
+                    <TableColumn fx:id="colActions" text="Actions" prefWidth="120"/>
+                    <TableColumn fx:id="colStatus" text="Status" prefWidth="120"/>
+                    <TableColumn fx:id="colSpecs" text="Specs" prefWidth="200"/>
+                    <TableColumn fx:id="colPrice" text="Price/Day" prefWidth="120"/>
+                    <TableColumn fx:id="colYear" text="Year" prefWidth="80"/>
+                    <TableColumn fx:id="colCategory" text="Category" prefWidth="120"/>
+                    <TableColumn fx:id="colName" text="Car" prefWidth="220"/>
+                </columns>
+            </TableView>
+
 
         </VBox>
     </center>
