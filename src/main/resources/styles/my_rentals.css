@@ -1,0 +1,144 @@
+.root {
+    -fx-background-color: #f9f9f9;
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+}
+
+.page-title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #212529;
+}
+
+.subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #6c757d;
+    -fx-padding: 0 0 20 0;
+}
+
+/* Summary Cards - بوردور ملون قوي */
+.summary-card {
+    -fx-background-color: white;
+    -fx-background-radius: 16;
+    -fx-padding: 20;
+    -fx-alignment: center;
+    -fx-border-radius: 16;
+    -fx-border-width: 1.5;
+    -fx-border-style: solid;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 12, 0, 0, 4);
+    -fx-pref-width: 200;
+}
+
+.total-card { -fx-border-color: #adb5bd; }
+.cancelled-card { -fx-border-color: #adb5bd; }
+.completed-card { -fx-border-color: #adb5bd; }
+.active-card { -fx-border-color: #adb5bd; }
+
+.summary-value {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+}
+
+.summary-icon {
+    -fx-background-radius: 50;
+    -fx-min-width: 32;
+    -fx-min-height: 32;
+    -fx-max-width: 32;
+    -fx-max-height: 32;
+    -fx-alignment: center;
+    -fx-font-size: 16px;
+    -fx-text-fill: white;
+}
+
+.icon-total { -fx-background-color: #4361ee; }
+.icon-cancelled { -fx-background-color: #ef4444; }
+.icon-completed { -fx-background-color: #10b981; }
+.icon-active { -fx-background-color: #10b981; }
+
+.summary-label {
+    -fx-text-fill: #6c757d;
+    -fx-font-size: 14px;
+    -fx-padding: 8 0 0 0;
+}
+
+/* الجدول - مظبوط ومنظم */
+.table-view {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-padding: 0;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);
+}
+
+/* الـ Header - رمادي فاتح + مدور من فوق + خط سفلي خفيف + إزالة السهم */
+.table-view .column-header-background {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 12 12 0 0;
+    -fx-padding: 16 12;
+    -fx-border-color: transparent transparent #e9ecef transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-view .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #495057;
+    -fx-font-size: 14px;
+}
+
+/* إزالة سهم الترتيب تمامًا من كل الأعمدة */
+.table-view .column-header .arrow {
+    -fx-background-color: transparent;
+    -fx-shape: "";
+}
+
+/* الصفوف - خط سفلي خفيف بس + هوفر خفيف */
+.table-row-cell {
+    -fx-padding: 16 0;
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #e9ecef transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.table-row-cell:hover {
+    -fx-background-color: #f8f9fa;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #e3f2fd;
+}
+
+/* الخلايا - سنتر + إزالة خطوط رأسية */
+.table-cell {
+    -fx-padding: 0 20;
+    -fx-font-size: 14px;
+    -fx-text-fill: #212529;
+    -fx-alignment: CENTER;
+    -fx-border-width: 0;
+}
+
+/* إزالة خطوط رأسية تمامًا */
+.table-view .table-column {
+    -fx-border-width: 0;
+}
+/* Action Buttons - نفس الخصائص القديمة للإيموجي، و Cancel بنفس الشكل */
+.btn-view, .btn-cancel {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-font-size: 18px;  /* حجم الإيموجي القديم */
+    -fx-padding: 8 14;    /* مساحة أكبر عشان الكلمة ما تتقطعش */
+}
+
+.btn-view:hover {
+    -fx-background-color: #bbdefb;
+    -fx-background-radius: 8;
+}
+
+.btn-cancel:hover {
+    -fx-background-color: #fee2e2;
+    -fx-background-radius: 8;
+}
+/* Status Badge */
+.status-active { -fx-background-color: #d1fae5; -fx-text-fill: #065f46; -fx-background-radius: 20; -fx-padding: 6 14; -fx-font-weight: bold; }
+.status-cancelled { -fx-background-color: #fee2e2; -fx-text-fill: #991b1b; -fx-background-radius: 20; -fx-padding: 6 14; -fx-font-weight: bold; }
+.status-completed { -fx-background-color: #f3f4f6; -fx-text-fill: #374151; -fx-background-radius: 20; -fx-padding: 6 14; -fx-font-weight: bold; }
+
+
