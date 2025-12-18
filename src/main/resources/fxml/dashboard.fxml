@@ -219,6 +219,17 @@
                                          -fx-border-radius: 12; -fx-background-radius: 12;
                                          -fx-padding: 0 12; -fx-font-size: 14px;"/>
                     </VBox>
+                    <!-- ROW 7: Status (جديد) -->
+                    <VBox spacing="8">
+                        <Label text="Status"
+                               style="-fx-font-size: 13px; -fx-font-weight: 700; -fx-text-fill: #111827;"/>
+                        <ComboBox fx:id="cbStatus" promptText="Available"
+                                  prefHeight="44" maxWidth="Infinity"
+                                  style="-fx-background-color: #f9fafb; -fx-border-color: #e5e7eb; -fx-border-width: 1;
+                     -fx-border-radius: 12; -fx-background-radius: 12;
+                     -fx-padding: 0 12; -fx-font-size: 14px;"/>
+                    </VBox>
+
 
                     <!-- ROW 7: Image URL + Upload -->
                     <VBox spacing="8">
