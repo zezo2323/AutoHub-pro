@@ -1,43 +1,75 @@
 package com.autohub.autohub.backend.models;
 
 public class Car {
-    private String name;
-    private String type;
+    private int carId;
+    private String carName;
+    private String brand;           // ← جديد
+    private String model;
     private String year;
-    private String fuel;
-    private String seats;
+    private double pricePerDay;
+    private int seats;              // ← جديد
+    private String transmission;    // ← جديد
+    private String fuelType;        // ← جديد
+    private String imageUrl;
     private String status;
-    private String pricePerDay;
+    private String description;
+    private String features;        // ← جديد
 
+    // Constructor فاضي
     public Car() {
     }
 
-    public Car(String name, String type, String year,
-               String fuel, String seats, String status,
-               String pricePerDay) {
-        this.name = name;
-        this.type = type;
+    // Constructor كامل (حدثه)
+    public Car(int carId, String carName, String brand, String model, String year,
+               double pricePerDay, int seats, String transmission, String fuelType,
+               String imageUrl, String status, String description, String features) {
+        this.carId = carId;
+        this.carName = carName;
+        this.brand = brand;
+        this.model = model;
         this.year = year;
-        this.fuel = fuel;
-        this.seats = seats;
-        this.status = status;
         this.pricePerDay = pricePerDay;
+        this.seats = seats;
+        this.transmission = transmission;
+        this.fuelType = fuelType;
+        this.imageUrl = imageUrl;
+        this.status = status;
+        this.description = description;
+        this.features = features;
     }
 
-    public String getName() {
-        return name;
+    // Getters & Setters الموجودة + الجديدة
+
+    public int getCarId() {
+        return carId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setCarId(int carId) {
+        this.carId = carId;
     }
 
-    public String getType() {
-        return type;
+    public String getCarName() {
+        return carName;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setCarName(String carName) {
+        this.carName = carName;
+    }
+
+    public String getBrand() {
+        return brand;
+    }
+
+    public void setBrand(String brand) {
+        this.brand = brand;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
     }
 
     public String getYear() {
@@ -48,20 +80,44 @@ public class Car {
         this.year = year;
     }
 
-    public String getFuel() {
-        return fuel;
+    public double getPricePerDay() {
+        return pricePerDay;
     }
 
-    public void setFuel(String fuel) {
-        this.fuel = fuel;
+    public void setPricePerDay(double pricePerDay) {
+        this.pricePerDay = pricePerDay;
     }
 
-    public String getSeats() {
+    public int getSeats() {
         return seats;
     }
 
-    public void setSeats(String seats) {
+    public void setSeats(int seats) {
         this.seats = seats;
+    }
+
+    public String getTransmission() {
+        return transmission;
+    }
+
+    public void setTransmission(String transmission) {
+        this.transmission = transmission;
+    }
+
+    public String getFuelType() {
+        return fuelType;
+    }
+
+    public void setFuelType(String fuelType) {
+        this.fuelType = fuelType;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public String getStatus() {
@@ -72,11 +128,19 @@ public class Car {
         this.status = status;
     }
 
-    public String getPricePerDay() {
-        return pricePerDay;
+    public String getDescription() {
+        return description;
     }
 
-    public void setPricePerDay(String pricePerDay) {
-        this.pricePerDay = pricePerDay;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getFeatures() {
+        return features;
+    }
+
+    public void setFeatures(String features) {
+        this.features = features;
     }
 }

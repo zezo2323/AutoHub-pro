@@ -16,7 +16,17 @@
 
     </properties>
 
+
     <dependencies>
+
+        <!-- MySQL Connector (System Path) -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>9.5.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/mysql-connector-j-9.5.0.jar</systemPath>
+        </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
