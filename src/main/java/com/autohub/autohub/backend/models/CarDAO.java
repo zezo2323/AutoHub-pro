@@ -320,4 +320,32 @@ public class CarDAO {
         car.setFeatures(rs.getString("features"));
         return car;
     }
+
+    /**
+     * Update car status (available, rented, maintenance)
+     */
+    public static boolean updateCarStatus(int carId, String status) {
+        String query = "UPDATE cars SET status = ? WHERE car_id = ?";
+
+        try (Connection conn = DBconnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, status);
+            pstmt.setInt(2, carId);
+
+            int result = pstmt.executeUpdate();
+
+            if (result > 0) {
+                System.out.println("✅ Car status updated to: " + status);
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ Error updating car status: " + e.getMessage());
+            return false;
+        }
+
+        return false;
+    }
+
 }

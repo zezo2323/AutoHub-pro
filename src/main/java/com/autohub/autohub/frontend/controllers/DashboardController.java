@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -16,6 +17,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.net.URL;
@@ -323,10 +326,19 @@ public class DashboardController implements Initializable {
     private void handleUsers() {
         setActiveWithIcon(btnUsers);
         contentBox.getChildren().clear();
-        Label placeholder = new Label("Users Management Page - Coming Soon!");
-        placeholder.setStyle("-fx-font-size: 24px; -fx-text-fill: #64748b;");
-        contentBox.getChildren().add(placeholder);
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/users.fxml"));
+            Parent usersView = loader.load();
+            contentBox.getChildren().add(usersView);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Label errorLabel = new Label("Error loading Users page: " + e.getMessage());
+            errorLabel.setStyle("-fx-font-size: 16px; -fx-text-fill: red;");
+            contentBox.getChildren().add(errorLabel);
+        }
     }
+
 
     @FXML
     private void handleLogout() {
@@ -350,7 +362,8 @@ public class DashboardController implements Initializable {
         // جلب بيانات الأدمن من الداتابيز
         User adminUser = UserDAO.getUserById(1);
         if (adminUser == null) {
-            adminUser = new User(1, "Admin User", "admin@drivenow.com", "+20 123 456 789", null);
+            adminUser = new User(1, "Admin User", "admin@drivenow.com", "admin123", "+20 123 456 789", "admin", null);
+
         }
 
         System.out.println("👤 Loaded user: " + adminUser.getFullName() + ", Avatar: " + adminUser.getAvatar());
@@ -657,6 +670,7 @@ public class DashboardController implements Initializable {
         invoiceBtn.setGraphic(invoiceIcon);
         invoiceBtn.setGraphicTextGap(8);
         invoiceBtn.setStyle("-fx-background-color: white; -fx-text-fill: #0f172a; -fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-padding: 12 24; -fx-font-size: 14px; -fx-background-radius: 8; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2); -fx-cursor: hand;");
+        invoiceBtn.setOnAction(e -> openCreateInvoiceDialog());
 
         header.getChildren().addAll(textBox, addBtn, invoiceBtn);
         return header;
@@ -763,6 +777,8 @@ public class DashboardController implements Initializable {
         Button btn2 = createActionButton("fas-eye", "View Rentals");
         btn2.setOnAction(e -> handleRentals());
         Button btn3 = createActionButton("fas-file-alt", "Generate Invoice");
+        // مثال: في الـ Quick Actions button
+        btn3.setOnAction(e -> openCreateInvoiceDialog());
 
         HBox.setHgrow(btn1, Priority.ALWAYS);
         HBox.setHgrow(btn2, Priority.ALWAYS);
@@ -1325,6 +1341,37 @@ public class DashboardController implements Initializable {
 
         // للآن، نرجع empty array عشان الـ PNG encoding معقد بدون libraries
         return new byte[0];
+    }
+
+    /**
+     * Open dialog to create new invoice
+     */
+    private void openCreateInvoiceDialog() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/create_invoice_dialog.fxml"));
+            Parent root = loader.load();
+
+            Stage dialogStage = new Stage();
+            dialogStage.setTitle("Create New Invoice");
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setScene(new Scene(root));
+            dialogStage.setResizable(false);
+            dialogStage.showAndWait();
+
+            // Check if invoice was created
+            CreateInvoiceDialogController controller = loader.getController();
+            if (controller.isInvoiceCreated()) {
+                System.out.println("✅ Invoice created successfully!");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error");
+            alert.setHeaderText("Failed to open invoice dialog");
+            alert.setContentText(e.getMessage());
+            alert.showAndWait();
+        }
     }
 
 

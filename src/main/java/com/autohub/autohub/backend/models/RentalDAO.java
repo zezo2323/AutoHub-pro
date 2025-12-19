@@ -183,5 +183,95 @@ public class RentalDAO {
         return 0.0;
     }
 
+    /**
+     * Create a new rental with customer information
+     */
+    public static int createRental(Rental rental) {
+        String query = "INSERT INTO rentals (user_id, car_id, customer_name, customer_email, customer_phone, " +
+                "start_date, end_date, total_amount, payment_status, status) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (Connection conn = DBconnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+
+            if (rental.getUserId() != null) {
+                pstmt.setInt(1, rental.getUserId());
+            } else {
+                pstmt.setNull(1, java.sql.Types.INTEGER);
+            }
+
+            pstmt.setInt(2, rental.getCarId());
+            pstmt.setString(3, rental.getCustomerName());
+            pstmt.setString(4, rental.getCustomerEmail());
+            pstmt.setString(5, rental.getCustomerPhone());
+            pstmt.setDate(6, java.sql.Date.valueOf(rental.getStartDate()));
+            pstmt.setDate(7, java.sql.Date.valueOf(rental.getEndDate()));
+            pstmt.setDouble(8, rental.getTotalAmount());
+            pstmt.setString(9, rental.getPaymentStatus() != null ? rental.getPaymentStatus() : "unpaid");
+            pstmt.setString(10, rental.getStatus() != null ? rental.getStatus() : "active");
+
+            int result = pstmt.executeUpdate();
+
+            if (result > 0) {
+                ResultSet rs = pstmt.getGeneratedKeys();
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error creating rental: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return -1;
+    }
+
+    /**
+     * Get rental by ID with all details
+     */
+    public static Rental getRentalById(int rentalId) {
+        String query = "SELECT r.*, c.car_name, c.brand as car_brand, c.image_url as car_image " +
+                "FROM rentals r " +
+                "LEFT JOIN cars c ON r.car_id = c.car_id " +
+                "WHERE r.rental_id = ?";
+
+        try (Connection conn = DBconnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setInt(1, rentalId);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                Rental rental = new Rental();
+                rental.setRentalId(rs.getInt("rental_id"));
+
+                Object userIdObj = rs.getObject("user_id");
+                rental.setUserId(userIdObj != null ? (Integer) userIdObj : null);
+
+                rental.setCarId(rs.getInt("car_id"));
+                rental.setCustomerName(rs.getString("customer_name"));
+                rental.setCustomerEmail(rs.getString("customer_email"));
+                rental.setCustomerPhone(rs.getString("customer_phone"));
+                rental.setStartDate(rs.getDate("start_date").toLocalDate());
+                rental.setEndDate(rs.getDate("end_date").toLocalDate());
+                rental.setTotalAmount(rs.getDouble("total_amount"));
+                rental.setPaymentStatus(rs.getString("payment_status"));
+                rental.setStatus(rs.getString("status"));
+                rental.setCreatedAt(rs.getDate("created_at").toLocalDate());
+                rental.setCarName(rs.getString("car_name"));
+                rental.setCarBrand(rs.getString("car_brand"));
+                rental.setCarImageUrl(rs.getString("car_image"));
+
+                return rental;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error getting rental: " + e.getMessage());
+        }
+
+        return null;
+    }
+
 
 }

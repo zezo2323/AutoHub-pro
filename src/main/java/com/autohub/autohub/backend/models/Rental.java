@@ -5,7 +5,7 @@ import java.time.temporal.ChronoUnit;
 
 public class Rental {
     private int rentalId;
-    private int userId;
+    private Integer userId;  // Changed to Integer to allow null
     private int carId;
     private LocalDate startDate;
     private LocalDate endDate;
@@ -17,6 +17,7 @@ public class Rental {
     // للعرض في الجدول
     private String customerName;
     private String customerEmail;
+    private String customerPhone;
     private String carName;
     private String carBrand;
     private String carImageUrl;
@@ -67,13 +68,15 @@ public class Rental {
         this.rentalId = rentalId;
     }
 
-    public int getUserId() {
+    public Integer getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+
+    public void setUserId(Integer userId) {
         this.userId = userId;
     }
+
 
     public int getCarId() {
         return carId;
@@ -173,4 +176,13 @@ public class Rental {
 
     public void setCustomerId(int customerId) {
     }
+
+    public String getCustomerPhone() {
+        return customerPhone;
+    }
+
+    public void setCustomerPhone(String customerPhone) {
+        this.customerPhone = customerPhone;
+    }
+
 }

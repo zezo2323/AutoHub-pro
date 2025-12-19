@@ -4,20 +4,37 @@ public class User {
     private int userId;
     private String fullName;
     private String email;
+    private String password;
     private String phone;
+    private String role;
     private String avatar;
 
+    // Default Constructor
     public User() {
     }
 
-    public User(int userId, String fullName, String email, String phone, String avatar) {
+    // Constructor with all fields
+    public User(int userId, String fullName, String email, String password, String phone, String role, String avatar) {
         this.userId = userId;
         this.fullName = fullName;
         this.email = email;
+        this.password = password;
         this.phone = phone;
+        this.role = role;
         this.avatar = avatar;
     }
 
+    // Constructor without avatar (for users table)
+    public User(int userId, String fullName, String email, String password, String phone, String role) {
+        this.userId = userId;
+        this.fullName = fullName;
+        this.email = email;
+        this.password = password;
+        this.phone = phone;
+        this.role = role;
+    }
+
+    // Getters and Setters
     public int getUserId() {
         return userId;
     }
@@ -42,12 +59,28 @@ public class User {
         this.email = email;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public String getPhone() {
         return phone;
     }
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getAvatar() {
@@ -65,6 +98,7 @@ public class User {
                 ", fullName='" + fullName + '\'' +
                 ", email='" + email + '\'' +
                 ", phone='" + phone + '\'' +
+                ", role='" + role + '\'' +
                 ", avatar='" + avatar + '\'' +
                 '}';
     }

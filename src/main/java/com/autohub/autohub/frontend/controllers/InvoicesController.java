@@ -1,5 +1,7 @@
 package com.autohub.autohub.frontend.controllers;
 
+import com.autohub.autohub.backend.models.Car;
+import com.autohub.autohub.backend.models.CarDAO;
 import com.autohub.autohub.backend.models.Rental;
 import com.autohub.autohub.backend.models.RentalDAO;
 import javafx.collections.FXCollections;
@@ -318,13 +320,16 @@ public class InvoicesController implements Initializable {
 
     private void handleViewInvoice(Rental rental) {
         try {
+            // Get the car details first
+            Car car = CarDAO.getCarById(rental.getCarId());
+
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
                     getClass().getResource("/fxml/invoice.fxml")
             );
             javafx.scene.Parent invoiceRoot = loader.load();
 
             InvoiceController invoiceController = loader.getController();
-            invoiceController.setRental(rental);
+            invoiceController.setRental(rental, car); // ← Pass both rental and car!
 
             javafx.stage.Stage invoiceStage = new javafx.stage.Stage();
             invoiceStage.setTitle("Invoice - INV-" + String.format("%03d", rental.getRentalId()));
@@ -343,4 +348,5 @@ public class InvoicesController implements Initializable {
             alert.showAndWait();
         }
     }
+
 }

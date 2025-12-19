@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      xmlns="http://javafx.com/javafx/17"
+      fx:controller="com.autohub.autohub.frontend.controllers.UserDialogController"
+      spacing="20"
+      style="-fx-background-color: white;"
+      prefWidth="500"
+      prefHeight="550">
+
+    <padding>
+        <Insets top="30" right="30" bottom="30" left="30"/>
+    </padding>
+
+    <!-- HEADER -->
+    <VBox spacing="8">
+        <Label fx:id="lblTitle" text="Add New User"
+               style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+        <Label text="Fill in the user information below"
+               style="-fx-font-size: 13px; -fx-text-fill: #64748b;"/>
+    </VBox>
+
+    <Separator style="-fx-background-color: #e5e7eb;"/>
+
+    <!-- FORM -->
+    <VBox spacing="16" VBox.vgrow="ALWAYS">
+
+        <!-- Full Name -->
+        <VBox spacing="6">
+            <Label text="Full Name *"
+                   style="-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #374151;"/>
+            <TextField fx:id="txtFullName"
+                       promptText="Enter full name"
+                       style="-fx-background-color: #f9fafb; -fx-border-color: #e5e7eb;
+                              -fx-border-radius: 8; -fx-background-radius: 8;
+                              -fx-padding: 12 16; -fx-font-size: 14px;"/>
+        </VBox>
+
+        <!-- Email -->
+        <VBox spacing="6">
+            <Label text="Email Address *"
+                   style="-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #374151;"/>
+            <TextField fx:id="txtEmail"
+                       promptText="email@example.com"
+                       style="-fx-background-color: #f9fafb; -fx-border-color: #e5e7eb;
+                              -fx-border-radius: 8; -fx-background-radius: 8;
+                              -fx-padding: 12 16; -fx-font-size: 14px;"/>
+        </VBox>
+
+        <!-- Password -->
+        <VBox spacing="6">
+            <Label text="Password *"
+                   style="-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #374151;"/>
+            <PasswordField fx:id="txtPassword"
+                           promptText="Enter password (min 6 characters)"
+                           style="-fx-background-color: #f9fafb; -fx-border-color: #e5e7eb;
+                                  -fx-border-radius: 8; -fx-background-radius: 8;
+                                  -fx-padding: 12 16; -fx-font-size: 14px;"/>
+        </VBox>
+
+        <!-- Phone -->
+        <VBox spacing="6">
+            <Label text="Phone Number"
+                   style="-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #374151;"/>
+            <TextField fx:id="txtPhone"
+                       promptText="+20 123 456 789"
+                       style="-fx-background-color: #f9fafb; -fx-border-color: #e5e7eb;
+                              -fx-border-radius: 8; -fx-background-radius: 8;
+                              -fx-padding: 12 16; -fx-font-size: 14px;"/>
+        </VBox>
+
+        <!-- Role -->
+        <VBox spacing="6">
+            <Label text="Role *"
+                   style="-fx-font-size: 13px; -fx-font-weight: 600; -fx-text-fill: #374151;"/>
+            <ComboBox fx:id="cmbRole"
+                      promptText="Select role"
+                      prefWidth="440"
+                      style="-fx-background-color: #f9fafb; -fx-border-color: #e5e7eb;
+                             -fx-border-radius: 8; -fx-background-radius: 8;"/>
+        </VBox>
+
+    </VBox>
+
+    <!-- ERROR MESSAGE -->
+    <Label fx:id="lblError" text=""
+           style="-fx-text-fill: #ef4444; -fx-font-size: 13px; -fx-font-weight: 600;"
+           visible="false" managed="false"/>
+
+    <!-- BUTTONS -->
+    <HBox spacing="12" alignment="CENTER_RIGHT">
+        <Button fx:id="btnCancel"
+                text="Cancel"
+                onAction="#handleCancel"
+                style="-fx-background-color: #f3f4f6; -fx-text-fill: #374151;
+                       -fx-padding: 12 24; -fx-background-radius: 8;
+                       -fx-cursor: hand; -fx-font-weight: 600; -fx-font-size: 14px;"
+                prefWidth="120"/>
+        <Button fx:id="btnSave"
+                text="Save User"
+                onAction="#handleSave"
+                style="-fx-background-color: #3b82f6; -fx-text-fill: white;
+                       -fx-padding: 12 24; -fx-background-radius: 8;
+                       -fx-cursor: hand; -fx-font-weight: 600; -fx-font-size: 14px;"
+                prefWidth="120"/>
+    </HBox>
+
+</VBox>

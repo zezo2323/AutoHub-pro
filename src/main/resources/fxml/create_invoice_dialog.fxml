@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<ScrollPane xmlns:fx="http://javafx.com/fxml/1"
+            xmlns="http://javafx.com/javafx/17"
+            fx:controller="com.autohub.autohub.frontend.controllers.CreateInvoiceDialogController"
+            prefWidth="700" prefHeight="700" fitToWidth="true">
+
+    <VBox spacing="20" style="-fx-padding: 30; -fx-background-color: white;">
+
+        <Label text="Create New Invoice" style="-fx-font-size: 24px; -fx-font-weight: bold;"/>
+
+        <VBox spacing="10">
+            <Label text="Customer Name:"/>
+            <TextField fx:id="txtCustomerName" promptText="Enter name"/>
+
+            <Label text="Email:"/>
+            <TextField fx:id="txtCustomerEmail" promptText="Enter email"/>
+
+            <Label text="Phone:"/>
+            <TextField fx:id="txtCustomerPhone" promptText="Enter phone"/>
+        </VBox>
+
+        <VBox spacing="10">
+            <Label text="Select Car:"/>
+            <ComboBox fx:id="cmbCar" prefWidth="400"/>
+        </VBox>
+
+        <HBox fx:id="carPreviewBox" spacing="10" visible="false" managed="false">
+            <Label fx:id="lblCarName"/>
+            <Label fx:id="lblCarDetails"/>
+            <Label fx:id="lblDailyRate"/>
+        </HBox>
+
+        <VBox spacing="10">
+            <Label text="Start Date:"/>
+            <DatePicker fx:id="dpStartDate"/>
+
+            <Label text="End Date:"/>
+            <DatePicker fx:id="dpEndDate"/>
+
+            <Label fx:id="lblDuration" text="Duration: 0 days"/>
+        </VBox>
+
+        <VBox spacing="8">
+            <Label text="Payment Summary" style="-fx-font-size: 16px; -fx-font-weight: bold;"/>
+            <Label fx:id="lblDailyRateValue" text="Daily Rate: $0.00"/>
+            <Label fx:id="lblNumDays" text="Days: 0"/>
+            <Label fx:id="lblSubtotal" text="Subtotal: $0.00"/>
+            <Label fx:id="lblTax" text="Tax: $0.00"/>
+            <Label fx:id="lblTotalAmount" text="Total: $0.00" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+        </VBox>
+
+        <Label fx:id="lblError" text="" style="-fx-text-fill: red;" visible="false" managed="false"/>
+
+        <HBox spacing="10">
+            <Button fx:id="btnCancel" text="Cancel" onAction="#handleCancel"/>
+            <Button fx:id="btnCreate" text="Create Invoice" onAction="#handleCreateInvoice"/>
+        </HBox>
+
+    </VBox>
+
+</ScrollPane>
