@@ -21,22 +21,7 @@ public class CarDAO {
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                Car car = new Car();
-                car.setCarId(rs.getInt("car_id"));
-                car.setCarName(rs.getString("car_name"));
-                car.setBrand(rs.getString("brand"));
-                car.setModel(rs.getString("model"));
-                car.setYear(rs.getString("year"));
-                car.setPricePerDay(rs.getDouble("price_per_day"));
-                car.setSeats(rs.getInt("seats"));
-                car.setTransmission(rs.getString("transmission"));
-                car.setFuelType(rs.getString("fuel_type"));
-                car.setImageUrl(rs.getString("image_url"));
-                car.setStatus(rs.getString("status"));
-                car.setDescription(rs.getString("description"));
-                car.setFeatures(rs.getString("features"));
-
-                cars.add(car);
+                cars.add(extractCarFromResultSet(rs));
             }
 
         } catch (SQLException e) {
@@ -47,7 +32,7 @@ public class CarDAO {
         return cars;
     }
 
-
+    // إضافة سيارة جديدة
     public static boolean addCar(Car car) {
         String sql = "INSERT INTO cars (car_name, brand, model, year, price_per_day, seats, transmission, fuel_type, image_url, status, description, features) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -80,7 +65,7 @@ public class CarDAO {
         }
     }
 
-
+    // تحديث سيارة
     public static boolean updateCar(Car car) {
         String sql = "UPDATE cars SET car_name=?, brand=?, model=?, year=?, price_per_day=?, " +
                 "seats=?, transmission=?, fuel_type=?, image_url=?, status=?, features=? " +
@@ -114,7 +99,6 @@ public class CarDAO {
         }
     }
 
-
     // حذف سيارة
     public static boolean deleteCar(int carId) {
         String query = "DELETE FROM cars WHERE car_id=?";
@@ -126,7 +110,7 @@ public class CarDAO {
             int rowsAffected = pstmt.executeUpdate();
 
             if (rowsAffected > 0) {
-                getCars(); // تحديث الليست
+                System.out.println("✅ Car deleted successfully");
                 return true;
             }
         } catch (SQLException e) {
@@ -136,9 +120,78 @@ public class CarDAO {
         return false;
     }
 
+    // جلب سيارة بواسطة ID
+    public static Car getCarById(int carId) {
+        Car car = null;
+        String query = "SELECT * FROM cars WHERE car_id = ?";
+
+        try (Connection conn = DBconnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, carId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                car = extractCarFromResultSet(rs);
+            }
+
+        } catch (Exception e) {
+            System.err.println("Error getting car by ID: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return car;
+    }
+
+    // جلب السيارات المتاحة فقط
+    public static List<Car> getAvailableCars() {
+        List<Car> cars = new ArrayList<>();
+        String query = "SELECT * FROM cars WHERE status = 'available' ORDER BY brand, model";
+
+        try (Connection conn = DBconnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                cars.add(extractCarFromResultSet(rs));
+            }
+
+            System.out.println("✅ Found " + cars.size() + " available cars");
+
+        } catch (SQLException e) {
+            System.err.println("Error getting available cars: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return cars;
+    }
+
+    // تحديث حالة السيارة
+    public static boolean updateCarAvailability(int carId, String status) {
+        String query = "UPDATE cars SET status = ? WHERE car_id = ?";
+
+        try (Connection conn = DBconnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setString(1, status);
+            stmt.setInt(2, carId);
+
+            int rowsAffected = stmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                System.out.println("✅ Car status updated to: " + status);
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error updating car status: " + e.getMessage());
+            e.printStackTrace();
+        }
+        return false;
+    }
+
     // ============================================
-// DASHBOARD STATISTICS METHODS
-// ============================================
+    // DASHBOARD STATISTICS METHODS
+    // ============================================
 
     /**
      * الحصول على عدد السيارات الكلي
@@ -219,8 +272,6 @@ public class CarDAO {
 
     /**
      * الحصول على أشهر السيارات (الأكثر إيجاراً)
-     *
-     * @param limit عدد السيارات المطلوبة
      */
     public static List<Car> getMostRentedCars(int limit) {
         List<Car> cars = new ArrayList<>();
@@ -238,21 +289,9 @@ public class CarDAO {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                Car car = new Car();
-                car.setCarId(rs.getInt("car_id"));
-                car.setCarName(rs.getString("car_name"));
-                car.setBrand(rs.getString("brand"));
-                car.setModel(rs.getString("model"));
-                car.setYear(rs.getString("year"));
-                car.setPricePerDay(rs.getDouble("price_per_day"));
-                car.setSeats(rs.getInt("seats"));
-                car.setTransmission(rs.getString("transmission"));
-                car.setFuelType(rs.getString("fuel_type"));
-                car.setImageUrl(rs.getString("image_url"));
-                car.setStatus(rs.getString("status"));
-                car.setFeatures(rs.getString("features"));
-                cars.add(car);
+                cars.add(extractCarFromResultSet(rs));
             }
+
         } catch (SQLException e) {
             System.err.println("Error getting most rented cars: " + e.getMessage());
             e.printStackTrace();
@@ -260,5 +299,25 @@ public class CarDAO {
         return cars;
     }
 
+    // ============================================
+    // HELPER METHOD - استخراج بيانات السيارة من ResultSet
+    // ============================================
 
+    private static Car extractCarFromResultSet(ResultSet rs) throws SQLException {
+        Car car = new Car();
+        car.setCarId(rs.getInt("car_id"));
+        car.setCarName(rs.getString("car_name"));
+        car.setBrand(rs.getString("brand"));
+        car.setModel(rs.getString("model"));
+        car.setYear(rs.getString("year"));
+        car.setPricePerDay(rs.getDouble("price_per_day"));
+        car.setSeats(rs.getInt("seats"));
+        car.setTransmission(rs.getString("transmission"));
+        car.setFuelType(rs.getString("fuel_type"));
+        car.setImageUrl(rs.getString("image_url"));
+        car.setStatus(rs.getString("status"));
+        car.setDescription(rs.getString("description"));
+        car.setFeatures(rs.getString("features"));
+        return car;
+    }
 }

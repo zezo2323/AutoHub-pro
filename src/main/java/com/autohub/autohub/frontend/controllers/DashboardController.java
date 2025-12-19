@@ -3,8 +3,10 @@ package com.autohub.autohub.frontend.controllers;
 import com.autohub.autohub.backend.models.Car;
 import com.autohub.autohub.backend.models.CarDAO;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -68,6 +70,7 @@ public class DashboardController implements Initializable {
         setupNavigationIcons();
         loadDashboardContent();
         setupComboBoxes();
+
         // إضافة options للـ ComboBoxes
         if (cbCategory != null) {
             cbCategory.getItems().addAll("Sedan", "SUV", "Sports", "Luxury", "Electric");
@@ -249,19 +252,41 @@ public class DashboardController implements Initializable {
     private void handleRentals() {
         setActiveWithIcon(btnRentals);
         contentBox.getChildren().clear();
-        Label placeholder = new Label("Rentals Page - Coming Soon!");
-        placeholder.setStyle("-fx-font-size: 24px; -fx-text-fill: #64748b;");
-        contentBox.getChildren().add(placeholder);
+
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("/fxml/rentals.fxml")
+            );
+            javafx.scene.Parent rentalsRoot = loader.load();
+            contentBox.getChildren().add(rentalsRoot);
+
+            System.out.println("✅ Rentals page loaded!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Label error = new Label("Failed to load Rentals page: " + e.getMessage());
+            error.setStyle("-fx-text-fill: red;");
+            contentBox.getChildren().add(error);
+        }
     }
+
 
     @FXML
     private void handleInvoices() {
         setActiveWithIcon(btnInvoices);
         contentBox.getChildren().clear();
-        Label placeholder = new Label("Invoices Page - Coming Soon!");
-        placeholder.setStyle("-fx-font-size: 24px; -fx-text-fill: #64748b;");
-        contentBox.getChildren().add(placeholder);
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/invoices.fxml"));
+            Parent invoicesRoot = loader.load();
+            contentBox.getChildren().add(invoicesRoot);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Label error = new Label("Failed to load Invoices page");
+            error.setStyle("-fx-text-fill: red;");
+            contentBox.getChildren().add(error);
+        }
     }
+
 
     @FXML
     private void handleComments() {
@@ -518,6 +543,7 @@ public class DashboardController implements Initializable {
         Button btn1 = createActionButton("fas-plus-circle", "Add New Car");
         btn1.setOnAction(e -> openAddCarModal());  // ← ضيف دي
         Button btn2 = createActionButton("fas-eye", "View Rentals");
+        btn2.setOnAction(e -> handleRentals());
         Button btn3 = createActionButton("fas-file-alt", "Generate Invoice");
 
         HBox.setHgrow(btn1, Priority.ALWAYS);

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      xmlns="http://javafx.com/javafx/17"
+      fx:controller="com.autohub.autohub.frontend.controllers.InvoicesController"
+      spacing="24"
+      style="-fx-background-color: #f8fafc;">
+
+    <padding>
+        <Insets top="32" right="40" bottom="40" left="40"/>
+    </padding>
+
+    <!-- HEADER -->
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <VBox spacing="8" HBox.hgrow="ALWAYS">
+            <Label text="Invoices"
+                   style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+            <Label text="View and search all rental invoices"
+                   style="-fx-font-size: 14px; -fx-text-fill: #64748b;"/>
+        </VBox>
+    </HBox>
+
+    <!-- STATS CARDS ROW -->
+    <HBox fx:id="statsRow" spacing="16" alignment="CENTER_LEFT"/>
+
+    <!-- SEARCH & FILTER -->
+    <HBox spacing="16" alignment="CENTER_LEFT">
+        <TextField fx:id="txtSearch"
+                   promptText="Search by invoice #, customer name..."
+                   prefWidth="400"
+                   style="-fx-background-color: white; -fx-padding: 12 16; -fx-border-color: #e5e7eb; -fx-border-radius: 8; -fx-background-radius: 8; -fx-font-size: 14px;"/>
+
+        <ComboBox fx:id="cmbStatusFilter"
+                  promptText="Filter by Status"
+                  prefWidth="180"
+                  style="-fx-background-color: white; -fx-border-color: #e5e7eb; -fx-border-radius: 8; -fx-background-radius: 8;"/>
+
+        <Button fx:id="btnClearFilter"
+                text="Clear Filters"
+                onAction="#handleClearFilters"
+                style="-fx-background-color: #f3f4f6; -fx-text-fill: #374151; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: 600;"/>
+    </HBox>
+
+    <!-- TABLE CARD -->
+    <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                 -fx-padding: 24; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 3);">
+
+        <TableView fx:id="invoicesTable"
+                   prefHeight="600"
+                   VBox.vgrow="ALWAYS"
+                   style="-fx-background-color: transparent; -fx-border-width: 0;">
+            <columns>
+                <TableColumn fx:id="colInvoiceId" text="Invoice #" prefWidth="120"/>
+                <TableColumn fx:id="colCustomer" text="Customer" prefWidth="280"/>
+                <TableColumn fx:id="colDate" text="Date" prefWidth="140"/>
+                <TableColumn fx:id="colAmount" text="Amount" prefWidth="140"/>
+                <TableColumn fx:id="colStatus" text="Status" prefWidth="140"/>
+                <TableColumn fx:id="colActions" text="Actions" prefWidth="120" sortable="false"/>
+            </columns>
+        </TableView>
+    </VBox>
+
+</VBox>

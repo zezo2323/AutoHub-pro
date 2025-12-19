@@ -14,10 +14,14 @@ public class Car {
     private String status;
     private String description;
     private String features;        // ← جديد
+    // ضيف الـ field ده في الـ Car class
+    private double dailyRate;
 
     // Constructor فاضي
     public Car() {
     }
+
+    // Getters & Setters الموجودة + الجديدة
 
     // Constructor كامل (حدثه)
     public Car(int carId, String carName, String brand, String model, String year,
@@ -37,8 +41,6 @@ public class Car {
         this.description = description;
         this.features = features;
     }
-
-    // Getters & Setters الموجودة + الجديدة
 
     public int getCarId() {
         return carId;
@@ -143,4 +145,14 @@ public class Car {
     public void setFeatures(String features) {
         this.features = features;
     }
+
+    // ضيف الـ getter والـ setter
+    public double getDailyRate() {
+        return dailyRate;
+    }
+
+    public void setDailyRate(double dailyRate) {
+        this.dailyRate = dailyRate;
+    }
+
 }

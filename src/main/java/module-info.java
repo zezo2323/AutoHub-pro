@@ -5,14 +5,14 @@ module com.autohub.autohub {
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.ikonli.fontawesome5;
     requires java.sql;
+    requires org.apache.pdfbox;
+    requires java.desktop;
 
     opens com.autohub.autohub to javafx.fxml;
     opens com.autohub.autohub.frontend.controllers to javafx.fxml;
-
-    // ضيف السطرين دول 👇
     opens com.autohub.autohub.backend.models to javafx.base;
-    exports com.autohub.autohub.backend.models;
 
     exports com.autohub.autohub;
     exports com.autohub.autohub.frontend.controllers;
+    exports com.autohub.autohub.backend.models;
 }
