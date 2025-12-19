@@ -2,6 +2,8 @@ package com.autohub.autohub.frontend.controllers;
 
 import com.autohub.autohub.backend.models.Car;
 import com.autohub.autohub.backend.models.CarDAO;
+import com.autohub.autohub.backend.models.User;
+import com.autohub.autohub.backend.models.UserDAO;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -24,6 +26,10 @@ public class DashboardController implements Initializable {
     // في DashboardController.java - أول الكلاس بعد public class DashboardController
 
     private static DashboardController instance;
+    @FXML
+    StackPane modalOverlay;
+    // ✅ أضف الحقل الجديد ده
+    private CarsController carsController;
     // ← تأكد موجود
     @FXML
     private Button btnUploadImage;
@@ -44,8 +50,6 @@ public class DashboardController implements Initializable {
     @FXML
     private Button btnLogout;
     @FXML
-    private StackPane modalOverlay;
-    @FXML
     private TextField txtBrand, txtCarName, txtYear, txtModel, txtPricePerDay, txtSeats, txtImageUrl, txtFeatures;
     @FXML
     private ComboBox<String> cbCategory, cbTransmission, cbFuelType;
@@ -59,6 +63,12 @@ public class DashboardController implements Initializable {
 
     public static DashboardController getInstance() {
         return instance;
+    }
+
+    // ✅ أضف الـ setter ده
+    public void setCarsController(CarsController carsController) {
+        this.carsController = carsController;
+        System.out.println("✅ CarsController registered!");
     }
 
     public void openAddCarModalPublic() {
@@ -287,15 +297,27 @@ public class DashboardController implements Initializable {
         }
     }
 
-
     @FXML
     private void handleComments() {
-        setActiveWithIcon(btnComments);
-        contentBox.getChildren().clear();
-        Label placeholder = new Label("Reviews Page - Coming Soon!");
-        placeholder.setStyle("-fx-font-size: 24px; -fx-text-fill: #64748b;");
-        contentBox.getChildren().add(placeholder);
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource("/fxml/adminreviews.fxml")
+            );
+            javafx.scene.Parent reviewsRoot = loader.load();
+
+            contentBox.getChildren().clear();
+            contentBox.getChildren().add(reviewsRoot);
+
+            setActiveWithIcon(btnComments);
+
+            System.out.println("✅ Admin Reviews page loaded!");
+
+        } catch (Exception e) {
+            System.err.println("❌ Error: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
+
 
     @FXML
     private void handleUsers() {
@@ -325,9 +347,16 @@ public class DashboardController implements Initializable {
         setActiveWithIcon(btnProfile);
         contentBox.getChildren().clear();
 
+        // جلب بيانات الأدمن من الداتابيز
+        User adminUser = UserDAO.getUserById(1);
+        if (adminUser == null) {
+            adminUser = new User(1, "Admin User", "admin@drivenow.com", "+20 123 456 789", null);
+        }
+
+        System.out.println("👤 Loaded user: " + adminUser.getFullName() + ", Avatar: " + adminUser.getAvatar());
+
         HBox header = new HBox(20);
         header.setAlignment(Pos.CENTER_LEFT);
-
         VBox titleBox = new VBox(8);
         Label title = new Label("Profile Settings");
         title.setStyle("-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #111827;");
@@ -336,7 +365,7 @@ public class DashboardController implements Initializable {
         titleBox.getChildren().addAll(title, subtitle);
 
         Button backBtn = new Button("← Back to Dashboard");
-        backBtn.setOnAction(e -> loadDashboardContent());
+        backBtn.setOnAction(event -> loadDashboardContent());
         backBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #2563eb; -fx-padding: 12 24; -fx-background-radius: 8;");
 
         HBox.setHgrow(titleBox, Priority.ALWAYS);
@@ -344,59 +373,248 @@ public class DashboardController implements Initializable {
         contentBox.getChildren().add(header);
 
         VBox profileCard = new VBox(20);
-        profileCard.setStyle("-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 32; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 2);");
+        profileCard.setStyle("-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 32;");
 
         HBox avatarSection = new HBox(20);
         avatarSection.setAlignment(Pos.CENTER_LEFT);
 
+        // ===== AVATAR CONTAINER =====
         StackPane avatar = new StackPane();
-        avatar.setPrefSize(100, 100);
-        Circle avatarCircle = new Circle(48);
+        avatar.setPrefSize(120, 120);
+        avatar.setStyle("-fx-border-radius: 120;");
+
+        Circle avatarCircle = new Circle(60);
         avatarCircle.setFill(Color.web("#dbeafe"));
         avatarCircle.setStroke(Color.web("#2563eb"));
+        avatarCircle.setStrokeWidth(2);
+
         FontIcon avatarIcon = new FontIcon("fas-user");
-        avatarIcon.setIconSize(32);
+        avatarIcon.setIconSize(48);
         avatarIcon.setIconColor(Color.web("#2563eb"));
+
         avatar.getChildren().addAll(avatarCircle, avatarIcon);
 
+        // ===== حمّل الصورة من المسار لو موجودة =====
+        if (adminUser.getAvatar() != null && !adminUser.getAvatar().isEmpty()) {
+            try {
+                // تحويل forward slashes للمسار الصحيح
+                String imagePath = adminUser.getAvatar().replace("/", "\\");
+
+                java.io.File imageFile = new java.io.File(imagePath);
+
+                System.out.println("📂 Looking for image at: " + imageFile.getAbsolutePath());
+
+                if (imageFile.exists()) {
+                    System.out.println("📸 Loading image from: " + imageFile.getAbsolutePath());
+
+                    javafx.scene.image.Image image = new javafx.scene.image.Image(
+                            imageFile.toURI().toString(),
+                            120, 120, false, true
+                    );
+
+                    if (!image.isError()) {
+                        javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(image);
+                        imageView.setFitWidth(120);
+                        imageView.setFitHeight(120);
+                        imageView.setPreserveRatio(false);
+
+                        javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(60);
+                        clip.setCenterX(60);
+                        clip.setCenterY(60);
+                        imageView.setClip(clip);
+
+                        avatar.getChildren().clear();
+                        avatar.getChildren().add(imageView);
+                        System.out.println("✅ Image loaded successfully");
+                    } else {
+                        System.out.println("❌ Image error: " + image.getException());
+                    }
+                } else {
+                    System.out.println("⚠️ Image file not found: " + imagePath);
+                }
+            } catch (Exception ex) {
+                System.err.println("❌ Error loading image: " + ex.getMessage());
+                ex.printStackTrace();
+            }
+        }
+
+
+        // Change Photo Button
+        Button changeImageBtn = new Button("Change Photo");
+        changeImageBtn.setStyle("-fx-background-color: #2563eb; -fx-text-fill: white; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;");
+
+        final User userRef = adminUser;
+        final StackPane avatarRef = avatar;
+
+        changeImageBtn.setOnAction(event -> {
+            javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+            fileChooser.setTitle("Select Profile Picture");
+            fileChooser.getExtensionFilters().addAll(
+                    new javafx.stage.FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+            );
+            javafx.stage.Stage stage = (javafx.stage.Stage) contentBox.getScene().getWindow();
+            java.io.File selectedFile = fileChooser.showOpenDialog(stage);
+
+            if (selectedFile != null) {
+                String imagePath = selectedFile.getAbsolutePath();
+                System.out.println("📸 Selected: " + imagePath);
+
+                // حفظ المسار مباشرة
+                boolean saved = UserDAO.updateAvatar(userRef.getUserId(), imagePath);
+
+                if (saved) {
+                    userRef.setAvatar(imagePath);
+
+                    // تحميل وعرض الصورة
+                    try {
+                        javafx.scene.image.Image image = new javafx.scene.image.Image(
+                                new java.io.File(imagePath).toURI().toString(),
+                                120, 120, false, true // smooth = false للسرعة
+                        );
+
+                        if (!image.isError()) {
+                            javafx.scene.image.ImageView imageView = new javafx.scene.image.ImageView(image);
+                            imageView.setFitWidth(120);
+                            imageView.setFitHeight(120);
+                            imageView.setPreserveRatio(false);
+
+                            javafx.scene.shape.Circle clip = new javafx.scene.shape.Circle(60);
+                            clip.setCenterX(60);
+                            clip.setCenterY(60);
+                            imageView.setClip(clip);
+
+                            avatarRef.getChildren().clear();
+                            avatarRef.getChildren().add(imageView);
+                            System.out.println("✅ Image displayed");
+                        }
+                    } catch (Exception ex) {
+                        System.err.println("Error: " + ex.getMessage());
+                    }
+
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setHeaderText("✅ Image Updated!");
+                    alert.setContentText("Your profile picture has been updated.");
+                    alert.showAndWait();
+                }
+            }
+        });
+
+
+        VBox avatarBox = new VBox(15, avatar, changeImageBtn);
+        avatarBox.setAlignment(Pos.TOP_CENTER);
+
+        // User Info
         VBox infoSection = new VBox(12);
-        Label nameLbl = new Label("Admin User");
+        Label nameLbl = new Label(adminUser.getFullName());
         nameLbl.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #111827;");
-        Label emailLbl = new Label("admin@drivenow.com");
+        Label emailLbl = new Label(adminUser.getEmail());
         emailLbl.setStyle("-fx-font-size: 16px; -fx-text-fill: #6b7280;");
         infoSection.getChildren().addAll(nameLbl, emailLbl);
 
-        avatarSection.getChildren().addAll(avatar, infoSection);
+        avatarSection.getChildren().addAll(avatarBox, infoSection);
 
+        // Form
         VBox form = new VBox(20);
-        createFormField(form, "Full Name", "Admin User", true);
-        createFormField(form, "Email", "admin@drivenow.com", true);
-        createFormField(form, "Phone", "+20 123 456 789", false);
 
+        TextField txtFullName = new TextField(adminUser.getFullName());
+        txtFullName.setStyle("-fx-background-color: #f9fafb; -fx-border-color: #d1d5db; -fx-border-width: 1 1 2 1; -fx-border-radius: 8; -fx-padding: 12 16; -fx-font-size: 14px;");
+        form.getChildren().add(createProfileFormField("Full Name", txtFullName));
+
+        TextField txtEmail = new TextField(adminUser.getEmail());
+        txtEmail.setStyle("-fx-background-color: #f9fafb; -fx-border-color: #d1d5db; -fx-border-width: 1 1 2 1; -fx-border-radius: 8; -fx-padding: 12 16; -fx-font-size: 14px;");
+        form.getChildren().add(createProfileFormField("Email", txtEmail));
+
+        String phoneValue = adminUser.getPhone() != null ? adminUser.getPhone() : "";
+        TextField txtPhone = new TextField(phoneValue);
+        txtPhone.setStyle("-fx-background-color: #f9fafb; -fx-border-color: #d1d5db; -fx-border-width: 1 1 2 1; -fx-border-radius: 8; -fx-padding: 12 16; -fx-font-size: 14px;");
+        form.getChildren().add(createProfileFormField("Phone", txtPhone));
+
+        // Save Button
         Button saveBtn = new Button("Save Changes");
-        saveBtn.setStyle("-fx-background-color: #2563eb; -fx-text-fill: white; -fx-padding: 16 32; -fx-background-radius: 8; -fx-font-size: 16px; -fx-font-weight: bold;");
-        saveBtn.setOnAction(e -> {
-            Alert success = new Alert(Alert.AlertType.INFORMATION);
-            success.setHeaderText("✅ Profile Updated!");
-            success.setContentText("Your information has been saved successfully.");
-            success.showAndWait();
+        saveBtn.setStyle("-fx-background-color: #2563eb; -fx-text-fill: white; -fx-padding: 16 32; -fx-background-radius: 8; -fx-font-size: 16px; -fx-font-weight: bold; -fx-cursor: hand;");
+
+        saveBtn.setOnAction(event -> {
+            String newFullName = txtFullName.getText().trim();
+            String newEmail = txtEmail.getText().trim();
+            String newPhone = txtPhone.getText().trim();
+
+            if (newFullName.isEmpty() || newEmail.isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setHeaderText("⚠️ Required Fields");
+                alert.setContentText("Full Name and Email are required!");
+                alert.showAndWait();
+                return;
+            }
+
+            userRef.setFullName(newFullName);
+            userRef.setEmail(newEmail);
+            userRef.setPhone(newPhone);
+
+            System.out.println("💾 Saving user: " + newFullName + ", " + newEmail);
+
+            boolean success = UserDAO.updateUser(userRef);
+
+            if (success) {
+                nameLbl.setText(newFullName);
+                emailLbl.setText(newEmail);
+
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setHeaderText("✅ Profile Updated!");
+                alert.setContentText("Your information has been saved successfully.");
+                alert.showAndWait();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText("❌ Error");
+                alert.setContentText("Failed to update profile. Please try again.");
+                alert.showAndWait();
+            }
         });
 
         form.getChildren().add(saveBtn);
+
         profileCard.getChildren().addAll(avatarSection, form);
         contentBox.getChildren().add(profileCard);
     }
 
-    private void createFormField(VBox parent, String labelText, String valueText, boolean editable) {
+    private VBox createProfileFormField(String labelText, TextField field) {
         VBox fieldBox = new VBox(8);
         Label label = new Label(labelText + ":");
         label.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #374151;");
-        TextField field = new TextField(valueText);
-        field.setEditable(editable);
-        field.setStyle("-fx-background-color: #f9fafb; -fx-border-color: #d1d5db; -fx-border-width: 1 1 2 1; -fx-border-radius: 8; -fx-padding: 12 16; -fx-font-size: 14px;");
         fieldBox.getChildren().addAll(label, field);
-        parent.getChildren().add(fieldBox);
+        return fieldBox;
     }
+
+
+    private VBox createEditableField(String labelText, String valueText) {
+        VBox fieldBox = new VBox(8);
+        Label label = new Label(labelText + ":");
+        label.setStyle("-fx-font-size: 14px; -fx-font-weight: bold; -fx-text-fill: #374151;");
+
+        TextField field = new TextField(valueText);
+        field.setEditable(true);
+        field.setStyle("-fx-background-color: #f9fafb; -fx-border-color: #d1d5db; -fx-border-width: 1 1 2 1; -fx-border-radius: 8; -fx-padding: 12 16; -fx-font-size: 14px;");
+
+        fieldBox.getChildren().addAll(label, field);
+        return fieldBox;
+    }
+
+    private void handleChangeProfileImage() {
+        javafx.stage.FileChooser fileChooser = new javafx.stage.FileChooser();
+        fileChooser.setTitle("Select Profile Image");
+        fileChooser.getExtensionFilters().addAll(
+                new javafx.stage.FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+        );
+
+        javafx.stage.Stage stage = (javafx.stage.Stage) contentBox.getScene().getWindow();
+        java.io.File selectedFile = fileChooser.showOpenDialog(stage);
+
+        if (selectedFile != null) {
+            String imagePath = selectedFile.getAbsolutePath();
+            System.out.println("✅ Image selected: " + imagePath);
+            // هنا بتحفظ الصورة في الداتابيز لاحقاً
+        }
+    }
+
 
     private void loadDashboardContent() {
         contentBox.getChildren().clear();
@@ -964,6 +1182,11 @@ public class DashboardController implements Initializable {
 
                 closeAddCarModal();
                 refreshCarsPage();
+                // ✅ تحديث صفحة Cars لو موجودة
+                if (carsController != null) {
+                    carsController.refreshData();
+                }
+
             } else {
                 Alert alert = new Alert(Alert.AlertType.ERROR);
                 alert.setHeaderText("Error");
@@ -977,6 +1200,7 @@ public class DashboardController implements Initializable {
             alert.setContentText("Error: " + e.getMessage());
             alert.showAndWait();
             e.printStackTrace();
+
         }
     }
 
@@ -1001,6 +1225,106 @@ public class DashboardController implements Initializable {
             System.err.println("Could not refresh dashboard: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private String compressAndSaveImage(java.io.File originalImageFile) {
+        try {
+            // تحميل الصورة الأصلية
+            javafx.scene.image.Image originalImage = new javafx.scene.image.Image(
+                    originalImageFile.toURI().toString()
+            );
+
+            double width = originalImage.getWidth();
+            double height = originalImage.getHeight();
+
+            System.out.println("📸 Original image size: " + width + "x" + height);
+
+            // ضغط الصورة إذا كانت كبيرة
+            double maxSize = 500;
+            double scale = 1.0;
+
+            if (width > maxSize || height > maxSize) {
+                scale = Math.min(maxSize / width, maxSize / height);
+                width = width * scale;
+                height = height * scale;
+                System.out.println("📉 Scaled to: " + width + "x" + height);
+            }
+
+            // إنشاء صورة مضغوطة باستخدام Canvas
+            javafx.scene.canvas.Canvas canvas = new javafx.scene.canvas.Canvas(width, height);
+            javafx.scene.canvas.GraphicsContext gc = canvas.getGraphicsContext2D();
+
+            // رسم الصورة المضغوطة على الـ Canvas
+            gc.drawImage(originalImage, 0, 0, width, height);
+
+            // تحويل الـ Canvas إلى Image
+            javafx.scene.image.WritableImage writableImage = new javafx.scene.image.WritableImage((int) width, (int) height);
+            canvas.snapshot(null, writableImage);
+
+            // حفظ الصورة في folder محلي
+            String fileName = "profile_" + System.currentTimeMillis() + ".png";
+            java.io.File profileDir = new java.io.File(System.getProperty("user.home"), ".drivenow/profiles");
+
+            if (!profileDir.exists()) {
+                profileDir.mkdirs();
+            }
+
+            java.io.File compressedImageFile = new java.io.File(profileDir, fileName);
+
+            // حفظ الصورة كـ File
+            javafx.scene.image.Image snapshotImage = canvas.snapshot(null, null);
+            saveImageToFile(snapshotImage, compressedImageFile);
+
+            System.out.println("✅ Image compressed and saved to: " + compressedImageFile.getAbsolutePath());
+            return compressedImageFile.getAbsolutePath();
+
+        } catch (Exception e) {
+            System.err.println("❌ Error compressing image: " + e.getMessage());
+            e.printStackTrace();
+            return originalImageFile.getAbsolutePath();
+        }
+    }
+
+    private void saveImageToFile(javafx.scene.image.Image image, java.io.File file) {
+        try {
+            javafx.scene.image.WritableImage writableImage = new javafx.scene.image.WritableImage(
+                    (int) image.getWidth(),
+                    (int) image.getHeight()
+            );
+
+            javafx.scene.image.PixelWriter writer = writableImage.getPixelWriter();
+            javafx.scene.image.PixelReader reader = image.getPixelReader();
+
+            for (int y = 0; y < image.getHeight(); y++) {
+                for (int x = 0; x < image.getWidth(); x++) {
+                    writer.setArgb(x, y, reader.getArgb(x, y));
+                }
+            }
+
+            // حفظ كـ PNG بدون Swing
+            java.nio.file.Files.write(
+                    file.toPath(),
+                    getPNGBytes(writableImage)
+            );
+
+        } catch (Exception e) {
+            System.err.println("Error saving image: " + e.getMessage());
+        }
+    }
+
+    private byte[] getPNGBytes(javafx.scene.image.WritableImage image) throws Exception {
+        java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+
+        // كود بسيط لحفظ الصورة
+        javafx.scene.image.PixelReader reader = image.getPixelReader();
+        int width = (int) image.getWidth();
+        int height = (int) image.getHeight();
+
+        // إذا بدك حل أسهل، استخدم JPEG بدل PNG
+        // أو اترك الصورة الأصلية بدون ضغط وخليها في المسار الأصلي
+
+        // للآن، نرجع empty array عشان الـ PNG encoding معقد بدون libraries
+        return new byte[0];
     }
 
 

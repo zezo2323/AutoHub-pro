@@ -499,11 +499,15 @@ public class CarsController implements Initializable {
     private void handleAddNewCar() {
         try {
             DashboardController dashboard = DashboardController.getInstance();
-            if (dashboard != null) dashboard.openAddCarModalPublic();
+            if (dashboard != null) {
+                dashboard.setCarsController(this);
+                dashboard.openAddCarModalPublic();
+            }
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
         }
     }
+
 
     public void refreshData() {
         createStatisticsCards();

@@ -53,24 +53,24 @@
                                HBox.hgrow="ALWAYS"/>
                 </HBox>
             </HBox>
-
-            <!-- Table -->
-            <TableView fx:id="carsTable"
-                       maxWidth="Infinity"
-                       prefHeight="500">
-                <columns>
-                    <TableColumn fx:id="colCar" text="Car"/>
-                    <TableColumn fx:id="colCategory" text="Category" style="-fx-alignment: CENTER;"/>
-                    <TableColumn fx:id="colYear" text="Year" style="-fx-alignment: CENTER;"/>
-                    <TableColumn fx:id="colPrice" text="Price/Day" style="-fx-alignment: CENTER;"/>
-                    <TableColumn fx:id="colSpecs" text="Specs"/>
-                    <TableColumn fx:id="colStatus" text="Status" style="-fx-alignment: CENTER;"/>
-                    <TableColumn fx:id="colActions" text="Actions" sortable="false"
-                                 style="-fx-alignment: CENTER;"/>
-                </columns>
-            </TableView>
-
-
+            <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                 -fx-padding: 24; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 3);">
+                <!-- Table -->
+                <TableView fx:id="carsTable"
+                           maxWidth="Infinity"
+                           prefHeight="500">
+                    <columns>
+                        <TableColumn fx:id="colCar" text="Car"/>
+                        <TableColumn fx:id="colCategory" text="Category" style="-fx-alignment: CENTER;"/>
+                        <TableColumn fx:id="colYear" text="Year" style="-fx-alignment: CENTER;"/>
+                        <TableColumn fx:id="colPrice" text="Price/Day" style="-fx-alignment: CENTER;"/>
+                        <TableColumn fx:id="colSpecs" text="Specs"/>
+                        <TableColumn fx:id="colStatus" text="Status" style="-fx-alignment: CENTER;"/>
+                        <TableColumn fx:id="colActions" text="Actions" sortable="false"
+                                     style="-fx-alignment: CENTER;"/>
+                    </columns>
+                </TableView>
+            </VBox>
         </VBox>
     </center>
 

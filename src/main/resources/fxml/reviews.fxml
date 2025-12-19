@@ -3,85 +3,115 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
 
-<ScrollPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            xmlns="http://javafx.com/javafx"
             fx:controller="com.autohub.autohub.frontend.controllers.ReviewsController"
-            fitToWidth="true"
-            style="-fx-background: #f8f9fa; -fx-border-color: transparent;"
-            vbarPolicy="AS_NEEDED">
+            style="-fx-background-color: #f8fafc;"
+            prefWidth="1200" prefHeight="800">
 
-    <VBox fx:id="rootContainer"
-          spacing="25"
-          alignment="TOP_CENTER"
-          style="-fx-padding: 30 20 50 20;">
+    <center>
+        <VBox spacing="24">
+            <padding>
+                <Insets top="32" right="40" bottom="40" left="40"/>
+            </padding>
 
-        <!-- TITLE SECTION -->
-        <VBox alignment="CENTER" spacing="6">
-            <Label text="Customer Reviews"
-                   style="-fx-font-size: 28; -fx-font-weight: bold; -fx-text-fill: #212529;" />
-            <Label text="Share your experience with our cars"
-                   style="-fx-font-size: 14; -fx-text-fill: #6c757d;" />
+            <!-- HEADER -->
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <Label text="Customer Reviews"
+                       style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+            </HBox>
+
+            <!-- WRITE REVIEW CARD -->
+            <VBox spacing="20"
+                  style="-fx-background-color: white; -fx-background-radius: 12;
+                         -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-border-width: 1;
+                         -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);">
+                <padding>
+                    <Insets top="24" right="24" bottom="24" left="24"/>
+                </padding>
+
+                <!-- Card Title -->
+                <Label text="Write a Review"
+                       style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+
+                <!-- Select Car - Full Width -->
+                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                    <Label text="Select Car"
+                           style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #475569;"/>
+                    <ComboBox fx:id="carCombo"
+                              promptText="Choose a car"
+                              prefHeight="44"
+                              maxWidth="Infinity"
+                              style="-fx-background-color: white; -fx-border-color: #cbd5e1;
+                                     -fx-border-radius: 8; -fx-background-radius: 8; -fx-font-size: 14px;"/>
+                </VBox>
+
+                <!-- Rating -->
+                <VBox spacing="8">
+                    <Label text="Rating"
+                           style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #475569;"/>
+                    <HBox fx:id="starsBox" alignment="CENTER_LEFT" spacing="8"/>
+                </VBox>
+
+                <!-- Review Text -->
+                <VBox spacing="8" HBox.hgrow="ALWAYS">
+                    <Label text="Your Review"
+                           style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #475569;"/>
+                    <TextArea fx:id="reviewArea"
+                              promptText="Share your experience..."
+                              wrapText="true"
+                              prefRowCount="4"
+                              prefHeight="120"
+                              maxWidth="Infinity"
+                              style="-fx-background-color: #f8fafc; -fx-border-color: #cbd5e1;
+                                     -fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12;
+                                     -fx-font-size: 14px; -fx-control-inner-background: #f8fafc;"/>
+                </VBox>
+
+                <!-- Post Button + Message -->
+                <VBox spacing="10">
+                    <Button fx:id="postBtn" text="Post Review"
+                            prefHeight="46"
+                            maxWidth="Infinity"
+                            style="-fx-background-color: #2563eb; -fx-text-fill: white;
+                                   -fx-background-radius: 8; -fx-font-size: 15px; -fx-font-weight: bold;
+                                   -fx-cursor: hand;"/>
+                    <Label fx:id="formMessage" style="-fx-font-size: 14px; -fx-padding: 5 0 0 0;"/>
+                </VBox>
+
+            </VBox>
+
+            <!-- REVIEWS SECTION -->
+
+            <VBox spacing="16" VBox.vgrow="ALWAYS" style="-fx-min-height: 800;">
+                <Label text="Recent Reviews"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #1e293b;"/>
+
+                <!-- White Container for Reviews -->
+                <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                 -fx-border-color: #e2e8f0; -fx-border-radius: 12; -fx-border-width: 1;
+                 -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 10, 0, 0, 2);
+                 -fx-min-height: 450; -fx-pref-height: 600;"
+                      VBox.vgrow="ALWAYS">
+                    <padding>
+                        <Insets top="20" right="20" bottom="20" left="20"/>
+                    </padding>
+
+                    <ScrollPane fitToWidth="true" fitToHeight="true"
+                                style="-fx-background-color: transparent; -fx-border-color: transparent;
+                           -fx-background: transparent;"
+                                vbarPolicy="AS_NEEDED"
+                                hbarPolicy="NEVER"
+                                VBox.vgrow="ALWAYS">
+                        <VBox fx:id="reviewsListContainer" spacing="20"/>
+                    </ScrollPane>
+                </VBox>
+            </VBox>
+
+
         </VBox>
+    </center>
 
-        <!-- WRITE REVIEW CARD -->
-        <VBox fx:id="writeCard"
-              spacing="18"
-              maxWidth="800"
-              styleClass="write-card">
-
-            <!-- Card Title -->
-            <Label text="Write a Review"
-                   style="-fx-font-size: 18; -fx-font-weight: bold; -fx-text-fill: #343a40;" />
-
-            <!-- Select Car Dropdown - Full Width -->
-            <VBox spacing="6">
-                <Label text="Select Car"
-                       style="-fx-font-size: 14; -fx-font-weight: 600; -fx-text-fill: #495057;" />
-                <ComboBox fx:id="carCombo"
-                          promptText="Choose a car"
-                          prefHeight="44"
-                          styleClass="custom-combo" />
-            </VBox>
-
-            <!-- Rating Section -->
-            <VBox spacing="6">
-                <Label text="Rating"
-                       style="-fx-font-size: 14; -fx-font-weight: 600; -fx-text-fill: #495057;" />
-                <HBox fx:id="starsBox"
-                      alignment="CENTER_LEFT"
-                      spacing="8" />
-            </VBox>
-
-            <!-- Review Text Area - Smaller Height -->
-            <VBox spacing="6">
-                <Label text="Your Review" style="-fx-font-size: 14; -fx-font-weight: 600; -fx-text-fill: #495057;" />
-                <TextArea fx:id="reviewArea"
-                          promptText="...Share your experience"
-                          wrapText="true"
-                          prefRowCount="3"
-                          prefHeight="100"
-                          styleClass="review-textarea" />
-            </VBox>
-
-            <!-- Post Button - Full Width -->
-            <VBox spacing="8">
-                <Button fx:id="postBtn" text="Post Review" prefHeight="50" styleClass="btn-primary" />
-
-                <!-- Message Label -->
-                <Label fx:id="formMessage" style="-fx-font-size: 14; -fx-padding: 5 0 0 0;" />
-            </VBox>
-
-        </VBox>
-
-        <!-- EXISTING REVIEWS SECTION -->
-        <VBox spacing="15" maxWidth="800">
-            <Label text="Recent Reviews"
-                   style="-fx-font-size: 20; -fx-font-weight: bold; -fx-text-fill: #212529;" />
-
-            <VBox fx:id="reviewsListContainer" spacing="15" />
-        </VBox>
-
-    </VBox>
-</ScrollPane>
+</BorderPane>

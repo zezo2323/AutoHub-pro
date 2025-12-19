@@ -1,35 +1,43 @@
 package com.autohub.autohub.frontend.controllers;
 
-import com.autohub.autohub.backend.services.MockCarService;
-import com.autohub.autohub.backend.services.MockReviewService;
-import com.autohub.autohub.backend.services.MockReviewService.ReviewItem;
+import com.autohub.autohub.backend.models.Car;
+import com.autohub.autohub.backend.models.CarDAO;
+import com.autohub.autohub.backend.models.Comment;
+import com.autohub.autohub.backend.models.CommentDAO;
 import javafx.animation.ScaleTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
+
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class ReviewsController {
 
-    @FXML private VBox rootContainer;
-    @FXML private ComboBox<String> carCombo;
-    @FXML private HBox starsBox;
-    @FXML private TextArea reviewArea;
-    @FXML private Button postBtn;
-    @FXML private Label formMessage;
-    @FXML private VBox reviewsListContainer;
-    @FXML private VBox writeCard;
-
-    // Services
-    private final MockCarService carService = new MockCarService();
-    private final MockReviewService reviewService = new MockReviewService();
-
+    // User ID مؤقت (هنستخدم user_id = 1 للتجربة)
+    private final int CURRENT_USER_ID = 1;
+    private final Label[] starLabels = new Label[5];
+    @FXML
+    private VBox rootContainer;
+    @FXML
+    private ComboBox<String> carCombo;
+    @FXML
+    private HBox starsBox;
+    @FXML
+    private TextArea reviewArea;
+    @FXML
+    private Button postBtn;
+    @FXML
+    private Label formMessage;
+    @FXML
+    private VBox reviewsListContainer;
+    @FXML
+    private VBox writeCard;
     // Rating
-    private int currentRating = 5; // Start with 5 stars selected
+    private int currentRating = 5;
     private int hoverRating = 0;
-    private Label[] starLabels = new Label[5];
 
     @FXML
     public void initialize() {
@@ -37,22 +45,24 @@ public class ReviewsController {
         buildStars();
         setupPostButton();
         refreshReviews();
-        styleComponents();
     }
 
     private void setupCarComboBox() {
-        // Make it expand horizontally
         carCombo.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(carCombo, Priority.ALWAYS);
 
-        // Add cars to dropdown
+        // جلب السيارات من الداتابيز
         carCombo.getItems().clear();
         carCombo.getItems().add("Choose a car");
-        carCombo.getItems().addAll(carService.getAllCarNames());
-        carCombo.getSelectionModel().select(0);
 
-        // Prefer CSS for visuals; apply a style-class in case
-        carCombo.getStyleClass().add("custom-combo");
+        List<Car> cars = CarDAO.getCars();
+        for (Car car : cars) {
+            // عرض: Brand + Model (مثلاً: Mercedes-Benz E-Class)
+            String displayName = car.getBrand() + " " + car.getModel();
+            carCombo.getItems().add(displayName);
+        }
+
+        carCombo.getSelectionModel().select(0);
     }
 
     private void buildStars() {
@@ -61,12 +71,11 @@ public class ReviewsController {
 
         for (int i = 0; i < 5; i++) {
             final int starValue = i + 1;
-            Label star = new Label("★"); // filled star glyph
-            star.getStyleClass().add("star"); // base class
-            star.setFont(Font.font(22)); // size tuned
+            Label star = new Label("★");
+            star.setFont(Font.font(24)); // أكبر شوية
             star.setCursor(javafx.scene.Cursor.HAND);
+            star.setStyle("-fx-text-fill: #cbd5e1;"); // لون رمادي فاتح
 
-            // Add hover animation
             star.setOnMouseEntered(e -> {
                 hoverRating = starValue;
                 updateStarsVisual();
@@ -91,6 +100,7 @@ public class ReviewsController {
         updateStarsVisual();
     }
 
+
     private void animateStar(Label star, boolean enlarge) {
         ScaleTransition st = new ScaleTransition(Duration.millis(140), star);
         st.setFromX(star.getScaleX());
@@ -105,45 +115,39 @@ public class ReviewsController {
             Label star = starLabels[i];
             int starNumber = i + 1;
 
-            // remove filled class first
-            star.getStyleClass().remove("star-filled");
-
             if (hoverRating > 0) {
-                // Preview while hovering
                 if (starNumber <= hoverRating) {
-                    if (!star.getStyleClass().contains("star-filled")) star.getStyleClass().add("star-filled");
+                    star.setStyle("-fx-text-fill: #fbbf24;"); // أصفر للـ hover
                     star.setText("★");
                 } else {
+                    star.setStyle("-fx-text-fill: #cbd5e1;");
                     star.setText("☆");
                 }
             } else {
-                // Normal mode
                 if (starNumber <= currentRating) {
-                    if (!star.getStyleClass().contains("star-filled")) star.getStyleClass().add("star-filled");
+                    star.setStyle("-fx-text-fill: #f59e0b;"); // برتقالي للتقييم المختار
                     star.setText("★");
                 } else {
+                    star.setStyle("-fx-text-fill: #cbd5e1;");
                     star.setText("☆");
                 }
             }
         }
     }
 
+
     private void setupPostButton() {
-        // Make post button full width
         postBtn.setMaxWidth(Double.MAX_VALUE);
         HBox.setHgrow(postBtn, Priority.ALWAYS);
-
         postBtn.setOnAction(e -> handlePost());
-
-        // Use CSS classes for hover/pressed visuals — keep no heavy inline styles
-        postBtn.getStyleClass().add("btn-primary");
     }
 
     private void handlePost() {
-        String carName = carCombo.getValue();
+        String carSelection = carCombo.getValue();
         String content = reviewArea.getText().trim();
 
-        if (carName == null || "Choose a car".equals(carName)) {
+        // التحقق من البيانات
+        if (carSelection == null || "Choose a car".equals(carSelection)) {
             showMessage("Please select a car", "red");
             return;
         }
@@ -153,18 +157,34 @@ public class ReviewsController {
             return;
         }
 
-        boolean success = reviewService.addReview(
-                carName.equals("Choose a car") ? null : carName,
-                "John Doe", // placeholder username
-                content,
-                currentRating
-        );
+        // جلب car_id من السيارة المختارة
+        List<Car> cars = CarDAO.getCars();
+        int selectedCarId = -1;
+
+        for (Car car : cars) {
+            String displayName = car.getBrand() + " " + car.getModel();
+            if (displayName.equals(carSelection)) {
+                selectedCarId = car.getCarId();
+                break;
+            }
+        }
+
+        if (selectedCarId == -1) {
+            showMessage("Error: Car not found", "red");
+            return;
+        }
+
+        // إنشاء التعليق
+        Comment comment = new Comment(CURRENT_USER_ID, selectedCarId, currentRating, content);
+
+        // حفظ في الداتابيز
+        boolean success = CommentDAO.addComment(comment);
 
         if (success) {
             showMessage("Review posted successfully!", "#28a745");
             refreshReviews();
 
-            // Clear text area and keep rating and car selection
+            // مسح النص فقط
             reviewArea.clear();
             reviewArea.setPromptText("...Share your experience");
         } else {
@@ -179,49 +199,56 @@ public class ReviewsController {
 
     private void refreshReviews() {
         reviewsListContainer.getChildren().clear();
-        reviewsListContainer.setSpacing(15);
+        reviewsListContainer.setSpacing(20); // زودنا المسافة
 
-        List<ReviewItem> reviews = reviewService.getAllReviews();
+        // جلب التعليقات من الداتابيز
+        List<Comment> comments = CommentDAO.getAllComments();
 
-        if (reviews.isEmpty()) {
+        if (comments.isEmpty()) {
             Label noReviews = new Label("No reviews yet. Be the first to share your experience!");
-            noReviews.setStyle("-fx-text-fill: #6c757d; -fx-font-size: 14; -fx-alignment: center; -fx-padding: 20;");
+            noReviews.setStyle("-fx-text-fill: #6c757d; -fx-font-size: 15; -fx-padding: 40;");
             reviewsListContainer.getChildren().add(noReviews);
             return;
         }
 
-        for (ReviewItem review : reviews) {
-            reviewsListContainer.getChildren().add(createReviewCard(review));
+        for (Comment comment : comments) {
+            reviewsListContainer.getChildren().add(createReviewCard(comment));
         }
     }
 
-    private VBox createReviewCard(ReviewItem review) {
-        VBox card = new VBox(12);
-        card.setPadding(new javafx.geometry.Insets(20));
-        card.setStyle("-fx-background-color: white; -fx-background-radius: 12; " +
-                "-fx-border-color: #e9ecef; -fx-border-radius: 12; " +
-                "-fx-border-width: 1; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.05), 10, 0, 0, 2);");
-        card.setMaxWidth(800);
 
-        // Header: Avatar, Name, Date
-        HBox header = new HBox(12);
+    private VBox createReviewCard(Comment comment) {
+        VBox card = new VBox(16);
+        card.setPadding(new javafx.geometry.Insets(24));
+        card.setStyle("-fx-background-color: #f8fafc; -fx-background-radius: 12; " +
+                "-fx-border-color: #e2e8f0; -fx-border-radius: 12; " +
+                "-fx-border-width: 1.5; -fx-min-height: 180;");
+        card.setPrefHeight(200);
+
+        // Header: Avatar, Name, Date, Actions
+        HBox header = new HBox(14);
         header.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
 
         // Avatar
         StackPane avatar = new StackPane();
-        avatar.setPrefSize(40, 40);
-        avatar.setStyle("-fx-background-color: #4a6fa5; -fx-background-radius: 20;");
-        Label avatarInitial = new Label(review.author.substring(0, 1).toUpperCase());
-        avatarInitial.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 16;");
+        avatar.setPrefSize(50, 50);
+        avatar.setStyle("-fx-background-color: #2563eb; -fx-background-radius: 25;");
+
+        String userName = comment.getUserName() != null ? comment.getUserName() : "User";
+        Label avatarInitial = new Label(userName.substring(0, 1).toUpperCase());
+        avatarInitial.setStyle("-fx-text-fill: white; -fx-font-weight: bold; -fx-font-size: 20;");
         avatar.getChildren().add(avatarInitial);
 
         // Name and Date
-        VBox nameDateBox = new VBox(2);
-        Label nameLabel = new Label(review.author);
-        nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16; -fx-text-fill: #333;");
+        VBox nameDateBox = new VBox(4);
+        Label nameLabel = new Label(userName);
+        nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 17; -fx-text-fill: #1e293b;");
 
-        Label dateLabel = new Label(review.createdAt);
-        dateLabel.setStyle("-fx-text-fill: #6c757d; -fx-font-size: 13;");
+        // تنسيق التاريخ
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy");
+        String formattedDate = comment.getCommentDate().format(formatter);
+        Label dateLabel = new Label(formattedDate);
+        dateLabel.setStyle("-fx-text-fill: #64748b; -fx-font-size: 14;");
 
         nameDateBox.getChildren().addAll(nameLabel, dateLabel);
 
@@ -229,50 +256,180 @@ public class ReviewsController {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // Car name
-        Label carLabel = new Label(review.carName != null ? review.carName : "General Review");
-        carLabel.setStyle("-fx-text-fill: #007bff; -fx-font-size: 13; -fx-font-weight: bold; -fx-padding: 4 10 4 10; " +
-                "-fx-background-color: #e7f1ff; -fx-background-radius: 6;");
+        // Car name badge
+        String carName = comment.getCarName() != null ? comment.getCarName() : "General Review";
+        Label carLabel = new Label(carName);
+        carLabel.setStyle("-fx-text-fill: #2563eb; -fx-font-size: 14; -fx-font-weight: bold; " +
+                "-fx-padding: 8 16 8 16; -fx-background-color: #dbeafe; -fx-background-radius: 8;");
 
-        header.getChildren().addAll(avatar, nameDateBox, spacer, carLabel);
+        // Action Buttons
+        HBox actionsBox = new HBox(8);
+        actionsBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+
+        // Edit Button
+        Button editBtn = new Button("Edit");
+        editBtn.setStyle("-fx-background-color: #f59e0b; -fx-text-fill: white; " +
+                "-fx-background-radius: 6; -fx-padding: 6 14 6 14; -fx-font-size: 13; " +
+                "-fx-font-weight: bold; -fx-cursor: hand;");
+        editBtn.setOnAction(e -> handleEditComment(comment, card));
+
+        // Delete Button
+        Button deleteBtn = new Button("Delete");
+        deleteBtn.setStyle("-fx-background-color: #ef4444; -fx-text-fill: white; " +
+                "-fx-background-radius: 6; -fx-padding: 6 14 6 14; -fx-font-size: 13; " +
+                "-fx-font-weight: bold; -fx-cursor: hand;");
+        deleteBtn.setOnAction(e -> handleDeleteComment(comment));
+
+        actionsBox.getChildren().addAll(editBtn, deleteBtn);
+
+        header.getChildren().addAll(avatar, nameDateBox, spacer, carLabel, actionsBox);
 
         // Rating stars
-        HBox ratingBox = new HBox(4);
+        HBox ratingBox = new HBox(6);
         ratingBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
-        for (int i = 0; i < review.rating; i++) {
+        for (int i = 0; i < comment.getRating(); i++) {
             Label star = new Label("★");
-            star.setStyle("-fx-text-fill: #FFD700; -fx-font-size: 18;");
+            star.setStyle("-fx-text-fill: #f59e0b; -fx-font-size: 22;");
             ratingBox.getChildren().add(star);
         }
-        for (int i = review.rating; i < 5; i++) {
+        for (int i = comment.getRating(); i < 5; i++) {
             Label star = new Label("☆");
-            star.setStyle("-fx-text-fill: #d1d5db; -fx-font-size: 18;");
+            star.setStyle("-fx-text-fill: #cbd5e1; -fx-font-size: 22;");
             ratingBox.getChildren().add(star);
         }
 
         // Review content
-        TextArea contentArea = new TextArea(review.content);
-        contentArea.setEditable(false);
-        contentArea.setWrapText(true);
-        contentArea.setPrefRowCount(3);
-        contentArea.setPrefHeight(80);
-        contentArea.setStyle("-fx-background-color: #f8f9fa; -fx-border-color: #e9ecef; " +
-                "-fx-border-radius: 8; -fx-padding: 12; -fx-font-size: 14; " +
-                "-fx-control-inner-background: #f8f9fa;");
+        Label contentLabel = new Label(comment.getCommentText());
+        contentLabel.setWrapText(true);
+        contentLabel.setStyle("-fx-text-fill: #475569; -fx-font-size: 15; -fx-line-spacing: 3;");
+        contentLabel.setMaxWidth(Double.MAX_VALUE);
 
-        card.getChildren().addAll(header, ratingBox, contentArea);
+        card.getChildren().addAll(header, ratingBox, contentLabel);
 
         return card;
     }
 
-    private void styleComponents() {
-        // TextArea styling - prefer CSS, but apply safe defaults
-        reviewArea.setPrefRowCount(3);
-        reviewArea.setPrefHeight(100);
-        reviewArea.getStyleClass().add("review-textarea");
-        reviewArea.setPromptText("...Share your experience");
+    /**
+     * تعديل تعليق - يحول الكارد لـ Edit Mode
+     */
+    private void handleEditComment(Comment comment, VBox originalCard) {
+        // إنشاء Edit Card
+        VBox editCard = new VBox(16);
+        editCard.setPadding(new javafx.geometry.Insets(24));
+        editCard.setStyle("-fx-background-color: #fff7ed; -fx-background-radius: 12; " +
+                "-fx-border-color: #f59e0b; -fx-border-radius: 12; " +
+                "-fx-border-width: 2; -fx-min-height: 180;");
 
-        // Post button styling: rely on CSS class
-        postBtn.getStyleClass().add("btn-primary");
+        // Header
+        Label editLabel = new Label("Edit Review");
+        editLabel.setStyle("-fx-font-size: 16; -fx-font-weight: bold; -fx-text-fill: #1e293b;");
+
+        // Rating stars للتعديل
+        HBox editStarsBox = new HBox(8);
+        editStarsBox.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        Label[] editStars = new Label[5];
+        final int[] newRating = {comment.getRating()};
+
+        for (int i = 0; i < 5; i++) {
+            final int starValue = i + 1;
+            Label star = new Label(starValue <= newRating[0] ? "★" : "☆");
+            star.setStyle("-fx-text-fill: " + (starValue <= newRating[0] ? "#f59e0b" : "#cbd5e1") +
+                    "; -fx-font-size: 24; -fx-cursor: hand;");
+
+            star.setOnMouseClicked(e -> {
+                newRating[0] = starValue;
+                for (int j = 0; j < 5; j++) {
+                    editStars[j].setText((j + 1) <= newRating[0] ? "★" : "☆");
+                    editStars[j].setStyle("-fx-text-fill: " +
+                            ((j + 1) <= newRating[0] ? "#f59e0b" : "#cbd5e1") +
+                            "; -fx-font-size: 24; -fx-cursor: hand;");
+                }
+            });
+
+            editStars[i] = star;
+            editStarsBox.getChildren().add(star);
+        }
+
+        // TextArea للتعديل
+        TextArea editTextArea = new TextArea(comment.getCommentText());
+        editTextArea.setWrapText(true);
+        editTextArea.setPrefRowCount(3);
+        editTextArea.setPrefHeight(100);
+        editTextArea.setStyle("-fx-background-color: white; -fx-border-color: #cbd5e1; " +
+                "-fx-border-radius: 8; -fx-background-radius: 8; -fx-padding: 12; -fx-font-size: 14;");
+
+        // Action Buttons
+        HBox buttonsBox = new HBox(10);
+        buttonsBox.setAlignment(javafx.geometry.Pos.CENTER_RIGHT);
+
+        Button saveBtn = new Button("Save");
+        saveBtn.setStyle("-fx-background-color: #22c55e; -fx-text-fill: white; " +
+                "-fx-background-radius: 6; -fx-padding: 8 20 8 20; -fx-font-size: 14; " +
+                "-fx-font-weight: bold; -fx-cursor: hand;");
+
+        saveBtn.setOnAction(e -> {
+            String newText = editTextArea.getText().trim();
+            if (newText.isEmpty()) {
+                showMessage("Review text cannot be empty", "red");
+                return;
+            }
+
+            // تحديث البيانات
+            comment.setRating(newRating[0]);
+            comment.setCommentText(newText);
+
+            // TODO: حفظ في الداتابيز (هنعملها بعدين)
+            // boolean success = CommentDAO.updateComment(comment);
+
+            showMessage("Review updated successfully!", "#22c55e");
+
+            // استبدال Edit Card بالكارد العادي المحدث
+            VBox newCard = createReviewCard(comment);
+            int index = reviewsListContainer.getChildren().indexOf(editCard);
+            reviewsListContainer.getChildren().set(index, newCard);
+        });
+
+        Button cancelBtn = new Button("Cancel");
+        cancelBtn.setStyle("-fx-background-color: #64748b; -fx-text-fill: white; " +
+                "-fx-background-radius: 6; -fx-padding: 8 20 8 20; -fx-font-size: 14; " +
+                "-fx-font-weight: bold; -fx-cursor: hand;");
+
+        cancelBtn.setOnAction(e -> {
+            // إرجاع الكارد الأصلي
+            int index = reviewsListContainer.getChildren().indexOf(editCard);
+            reviewsListContainer.getChildren().set(index, originalCard);
+        });
+
+        buttonsBox.getChildren().addAll(saveBtn, cancelBtn);
+
+        editCard.getChildren().addAll(editLabel, editStarsBox, editTextArea, buttonsBox);
+
+        // استبدال الكارد الأصلي بـ Edit Card
+        int index = reviewsListContainer.getChildren().indexOf(originalCard);
+        reviewsListContainer.getChildren().set(index, editCard);
     }
+
+    /**
+     * حذف تعليق
+     */
+    private void handleDeleteComment(Comment comment) {
+        Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+        confirmAlert.setTitle("Delete Review");
+        confirmAlert.setHeaderText("Are you sure?");
+        confirmAlert.setContentText("This review will be permanently deleted.");
+
+        confirmAlert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                boolean success = CommentDAO.deleteComment(comment.getCommentId());
+
+                if (success) {
+                    showMessage("Review deleted successfully!", "#22c55e");
+                    refreshReviews();
+                } else {
+                    showMessage("Error deleting review", "red");
+                }
+            }
+        });
+    }
+
 }

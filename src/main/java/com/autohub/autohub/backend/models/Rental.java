@@ -50,6 +50,7 @@ public class Rental {
     }
 
     public void setDuration(int days) {
+
     }
 
     public String getPeriodFormatted() {
