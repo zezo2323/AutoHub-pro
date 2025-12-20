@@ -1,9 +1,6 @@
 package com.autohub.autohub.frontend.controllers;
 
-import com.autohub.autohub.backend.models.Car;
-import com.autohub.autohub.backend.models.CarDAO;
-import com.autohub.autohub.backend.models.User;
-import com.autohub.autohub.backend.models.UserDAO;
+import com.autohub.autohub.backend.models.*;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -339,35 +336,75 @@ public class DashboardController implements Initializable {
         }
     }
 
-
     @FXML
     private void handleLogout() {
-        try {
-            javafx.scene.Parent root = javafx.fxml.FXMLLoader.load(
-                    getClass().getResource("/fxml/login.fxml")
-            );
-            javafx.stage.Stage stage = (javafx.stage.Stage) contentBox.getScene().getWindow();
-            stage.setScene(new javafx.scene.Scene(root));
-            stage.centerOnScreen();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        System.out.println("🚪 Admin logout requested");
+
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Logout");
+        alert.setHeaderText("Are you sure you want to logout?");
+        alert.setContentText("You will be returned to the login page.");
+
+        // تنسيق الـ Alert
+        DialogPane dialogPane = alert.getDialogPane();
+        dialogPane.setStyle("-fx-font-family: 'Segoe UI';");
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                // تسجيل الخروج من الـ Session
+                SessionManager.logout();
+                System.out.println("✅ Admin session cleared");
+
+                try {
+                    // فتح صفحة Login
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/auth.fxml"));
+                    Parent root = loader.load();
+
+                    Stage stage = (Stage) contentBox.getScene().getWindow();
+                    Scene scene = new Scene(root, 1100, 650);
+                    stage.setScene(scene);
+                    stage.setTitle("DriveNow - Login");
+                    stage.setMaximized(false); // إلغاء Maximized
+                    stage.centerOnScreen();
+                    stage.show();
+
+                    System.out.println("✅ Admin redirected to Login page");
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    System.err.println("❌ Error opening login page: " + e.getMessage());
+
+                    // رسالة خطأ
+                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                    errorAlert.setTitle("Error");
+                    errorAlert.setHeaderText("Logout Failed");
+                    errorAlert.setContentText("Could not return to login page.\nError: " + e.getMessage());
+                    errorAlert.showAndWait();
+                }
+            } else {
+                System.out.println("❌ Admin logout cancelled");
+            }
+        });
     }
+
 
     @FXML
     private void handleProfile() {
         setActiveWithIcon(btnProfile);
         contentBox.getChildren().clear();
 
-        // جلب بيانات الأدمن من الداتابيز
-        User adminUser = UserDAO.getUserById(1);
-        if (adminUser == null) {
-            adminUser = new User(1, "Admin User", "admin@drivenow.com", "admin123", "+20 123 456 789", "admin", null);
+        // ✅ جلب اليوزر من الـ Session
+        User adminUser = SessionManager.getCurrentUser();
 
+        // لو مفيش يوزر في الـ Session، استخدم default
+        if (adminUser == null) {
+            adminUser = UserDAO.getUserById(1); // fallback
+            System.err.println("⚠️ No session user! Using default.");
         }
 
         System.out.println("👤 Loaded user: " + adminUser.getFullName() + ", Avatar: " + adminUser.getAvatar());
 
+        // Header
         HBox header = new HBox(20);
         header.setAlignment(Pos.CENTER_LEFT);
         VBox titleBox = new VBox(8);
@@ -379,12 +416,13 @@ public class DashboardController implements Initializable {
 
         Button backBtn = new Button("← Back to Dashboard");
         backBtn.setOnAction(event -> loadDashboardContent());
-        backBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #2563eb; -fx-padding: 12 24; -fx-background-radius: 8;");
+        backBtn.setStyle("-fx-background-color: transparent; -fx-text-fill: #2563eb; -fx-padding: 12 24; -fx-background-radius: 8; -fx-cursor: hand;");
 
         HBox.setHgrow(titleBox, Priority.ALWAYS);
         header.getChildren().addAll(titleBox, backBtn);
         contentBox.getChildren().add(header);
 
+        // Profile Card
         VBox profileCard = new VBox(20);
         profileCard.setStyle("-fx-background-color: white; -fx-background-radius: 12; -fx-padding: 32;");
 
@@ -410,9 +448,7 @@ public class DashboardController implements Initializable {
         // ===== حمّل الصورة من المسار لو موجودة =====
         if (adminUser.getAvatar() != null && !adminUser.getAvatar().isEmpty()) {
             try {
-                // تحويل forward slashes للمسار الصحيح
                 String imagePath = adminUser.getAvatar().replace("/", "\\");
-
                 java.io.File imageFile = new java.io.File(imagePath);
 
                 System.out.println("📂 Looking for image at: " + imageFile.getAbsolutePath());
@@ -451,7 +487,6 @@ public class DashboardController implements Initializable {
             }
         }
 
-
         // Change Photo Button
         Button changeImageBtn = new Button("Change Photo");
         changeImageBtn.setStyle("-fx-background-color: #2563eb; -fx-text-fill: white; -fx-padding: 10 20; -fx-background-radius: 8; -fx-cursor: hand; -fx-font-weight: bold;");
@@ -472,17 +507,19 @@ public class DashboardController implements Initializable {
                 String imagePath = selectedFile.getAbsolutePath();
                 System.out.println("📸 Selected: " + imagePath);
 
-                // حفظ المسار مباشرة
                 boolean saved = UserDAO.updateAvatar(userRef.getUserId(), imagePath);
 
                 if (saved) {
                     userRef.setAvatar(imagePath);
 
+                    // ✅ تحديث الـ Session
+                    SessionManager.setCurrentUser(userRef);
+
                     // تحميل وعرض الصورة
                     try {
                         javafx.scene.image.Image image = new javafx.scene.image.Image(
                                 new java.io.File(imagePath).toURI().toString(),
-                                120, 120, false, true // smooth = false للسرعة
+                                120, 120, false, true
                         );
 
                         if (!image.isError()) {
@@ -511,7 +548,6 @@ public class DashboardController implements Initializable {
                 }
             }
         });
-
 
         VBox avatarBox = new VBox(15, avatar, changeImageBtn);
         avatarBox.setAlignment(Pos.TOP_CENTER);
@@ -568,6 +604,9 @@ public class DashboardController implements Initializable {
             boolean success = UserDAO.updateUser(userRef);
 
             if (success) {
+                // ✅ تحديث الـ Session
+                SessionManager.setCurrentUser(userRef);
+
                 nameLbl.setText(newFullName);
                 emailLbl.setText(newEmail);
 
@@ -588,6 +627,7 @@ public class DashboardController implements Initializable {
         profileCard.getChildren().addAll(avatarSection, form);
         contentBox.getChildren().add(profileCard);
     }
+
 
     private VBox createProfileFormField(String labelText, TextField field) {
         VBox fieldBox = new VBox(8);

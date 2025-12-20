@@ -1,5 +1,7 @@
 package com.autohub.autohub.backend.models;
 
+import java.time.LocalDateTime;
+
 public class User {
     private int userId;
     private String fullName;
@@ -8,6 +10,7 @@ public class User {
     private String phone;
     private String role;
     private String avatar;
+    private LocalDateTime createdAt; // ✅ ضيف ده
 
     // Default Constructor
     public User() {
@@ -91,6 +94,15 @@ public class User {
         this.avatar = avatar;
     }
 
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -102,4 +114,6 @@ public class User {
                 ", avatar='" + avatar + '\'' +
                 '}';
     }
+
+
 }

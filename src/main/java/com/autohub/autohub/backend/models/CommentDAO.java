@@ -155,4 +155,61 @@ public class CommentDAO {
         }
     }
 
+    /**
+     * جلب التعليقات الخاصة بمستخدم معين
+     */
+    public static List<Comment> getCommentsByUserId(int userId) {
+        List<Comment> comments = new ArrayList<>();
+        String sql = "SELECT c.*, u.full_name, CONCAT(car.brand, ' ', car.model) AS car_name " +
+                "FROM comments c " +
+                "INNER JOIN users u ON c.user_id = u.user_id " +
+                "INNER JOIN cars car ON c.car_id = car.car_id " +
+                "WHERE c.user_id = ? " +
+                "ORDER BY c.comment_date DESC";
+
+        try (Connection conn = DBconnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Comment comment = new Comment();
+                comment.setCommentId(rs.getInt("comment_id"));
+                comment.setUserId(rs.getInt("user_id"));
+                comment.setCarId(rs.getInt("car_id"));
+                comment.setRating(rs.getInt("rating"));
+                comment.setCommentText(rs.getString("comment_text"));
+                comment.setCommentDate(rs.getTimestamp("comment_date").toLocalDateTime());
+                comment.setUserName(rs.getString("full_name"));
+                comment.setCarName(rs.getString("car_name"));
+                comments.add(comment);
+            }
+
+            System.out.println("✅ Loaded " + comments.size() + " comments for user " + userId);
+        } catch (SQLException e) {
+            System.err.println("❌ Error loading user comments: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return comments;
+    }
+
+    public static double getAverageRating() {
+        String query = "SELECT AVG(rating) FROM comments WHERE rating IS NOT NULL";
+        try (Connection conn = DBconnector.getConnection();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+
+            if (rs.next()) {
+                double avg = rs.getDouble(1);
+                return Math.round(avg * 10.0) / 10.0; // تقريب لرقم واحد
+            }
+        } catch (SQLException e) {
+            System.err.println("Error calculating average rating: " + e.getMessage());
+        }
+        return 4.5; // default
+    }
+
+
 }

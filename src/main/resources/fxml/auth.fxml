@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="com.autohub.autohub.frontend.controllers.AuthController"
+            prefWidth="1100" prefHeight="650"
+            stylesheets="@../styles/auth.css">
+
+    <!-- LEFT SIDE -->
+    <left>
+        <VBox spacing="25" alignment="CENTER" styleClass="left-pane">
+            <Label text="🚗" styleClass="logo-icon"/>
+            <Label text="Premium Car Rental" styleClass="title"/>
+            <Label text="Experience luxury and comfort with our wide selection of premium vehicles. Book your perfect ride today"
+                   wrapText="true"
+                   styleClass="subtitle"/>
+
+            <HBox spacing="15" alignment="CENTER">
+                <VBox styleClass="stat-box" alignment="CENTER" spacing="5">
+                    <Label fx:id="lblRating" text="4.9" styleClass="stat-value"/>
+                    <Label text="Rating" style="-fx-font-size: 12px; -fx-text-fill: #777;"/>
+                </VBox>
+                <VBox styleClass="stat-box" alignment="CENTER" spacing="5">
+                    <Label fx:id="lblCustomers" text="+1000" styleClass="stat-value"/>
+                    <Label text="Customers" style="-fx-font-size: 12px; -fx-text-fill: #777;"/>
+                </VBox>
+                <VBox styleClass="stat-box" alignment="CENTER" spacing="5">
+                    <Label fx:id="lblCars" text="+50" styleClass="stat-value"/>
+                    <Label text="Cars" style="-fx-font-size: 12px; -fx-text-fill: #777;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </left>
+
+    <!-- RIGHT SIDE -->
+    <center>
+        <StackPane>
+            <!-- SIGN IN PANE -->
+            <VBox fx:id="signInPane" spacing="20" alignment="CENTER" styleClass="form-pane">
+                <Label text="Car Rental System" styleClass="form-title"/>
+                <Label text="Welcome back! Please login to continue" styleClass="form-subtitle"/>
+
+                <VBox spacing="15" alignment="CENTER">
+                    <TextField fx:id="txtLoginEmail" promptText="Email Address"
+                               prefWidth="300" style="-fx-padding: 12;"/>
+                    <PasswordField fx:id="txtLoginPassword" promptText="Password"
+                                   prefWidth="300" style="-fx-padding: 12;"/>
+
+                    <Label fx:id="lblLoginError" text=""
+                           style="-fx-text-fill: #dc2626; -fx-font-weight: bold;"
+                           visible="false"/>
+
+                    <Button text="Sign In" styleClass="primary-btn"
+                            onAction="#handleSignIn"/>
+
+                    <Label text="Don't have an account? Sign Up"
+                           styleClass="link"
+                           onMouseClicked="#showSignUp"/>
+                </VBox>
+            </VBox>
+
+            <!-- SIGN UP PANE -->
+            <VBox fx:id="signUpPane" spacing="20" alignment="CENTER"
+                  styleClass="form-pane" visible="false">
+
+                <Label text="Car Rental System" styleClass="form-title"/>
+                <Label text="Create your account to get started" styleClass="form-subtitle"/>
+
+                <VBox spacing="15" alignment="CENTER">
+                    <TextField fx:id="txtRegisterName" promptText="Full Name"
+                               prefWidth="300" style="-fx-padding: 12;"/>
+                    <TextField fx:id="txtRegisterEmail" promptText="Email Address"
+                               prefWidth="300" style="-fx-padding: 12;"/>
+                    <PasswordField fx:id="txtRegisterPassword" promptText="Password"
+                                   prefWidth="300" style="-fx-padding: 12;"/>
+                    <TextField fx:id="txtRegisterPhone" promptText="Phone Number (Optional)"
+                               prefWidth="300" style="-fx-padding: 12;"/>
+
+                    <Label fx:id="lblRegisterError" text=""
+                           style="-fx-text-fill: #dc2626; -fx-font-weight: bold;"
+                           visible="false"/>
+
+                    <Button text="Create Account" styleClass="primary-btn"
+                            onAction="#handleSignUp"/>
+
+                    <Label text="Already have an account? Sign In"
+                           styleClass="link"
+                           onMouseClicked="#showSignIn"/>
+                </VBox>
+            </VBox>
+        </StackPane>
+    </center>
+
+</BorderPane>

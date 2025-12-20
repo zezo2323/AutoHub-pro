@@ -273,5 +273,97 @@ public class RentalDAO {
         return null;
     }
 
+    /**
+     * جلب الإيجارات الخاصة بمستخدم معين
+     */
+    public static List<Rental> getRentalsByUserId(int userId) {
+        List<Rental> rentals = new ArrayList<>();
+        String query = "SELECT r.*, " +
+                "u.full_name as customer_name, u.email as customer_email, " +
+                "c.car_name, c.brand as car_brand, c.image_url as car_image " +
+                "FROM rentals r " +
+                "LEFT JOIN users u ON r.user_id = u.user_id " +
+                "LEFT JOIN cars c ON r.car_id = c.car_id " +
+                "WHERE r.user_id = ? " +
+                "ORDER BY r.rental_id DESC";
+
+        try (Connection conn = DBconnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Rental rental = extractRentalFromResultSet(rs);
+                rentals.add(rental);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error fetching user rentals: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return rentals;
+    }
+
+    /**
+     * إحصائيات خاصة بمستخدم معين
+     */
+    public static int getActiveRentalsCountByUserId(int userId) {
+        String query = "SELECT COUNT(*) FROM rentals WHERE user_id = ? AND status = 'active'";
+        return executeCountQueryWithParam(query, userId);
+    }
+
+    public static int getCompletedRentalsCountByUserId(int userId) {
+        String query = "SELECT COUNT(*) FROM rentals WHERE user_id = ? AND status = 'completed'";
+        return executeCountQueryWithParam(query, userId);
+    }
+
+    public static int getCancelledRentalsCountByUserId(int userId) {
+        String query = "SELECT COUNT(*) FROM rentals WHERE user_id = ? AND status = 'cancelled'";
+        return executeCountQueryWithParam(query, userId);
+    }
+
+    public static double getTotalRevenueByUserId(int userId) {
+        String query = "SELECT COALESCE(SUM(total_amount), 0) FROM rentals WHERE user_id = ? AND status != 'cancelled'";
+
+        try (Connection conn = DBconnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error getting user revenue: " + e.getMessage());
+        }
+
+        return 0.0;
+    }
+
+    /**
+     * Helper method للـ count queries مع parameter
+     */
+    private static int executeCountQueryWithParam(String query, int userId) {
+        try (Connection conn = DBconnector.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+
+            stmt.setInt(1, userId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Error executing count query: " + e.getMessage());
+        }
+
+        return 0;
+    }
+
 
 }

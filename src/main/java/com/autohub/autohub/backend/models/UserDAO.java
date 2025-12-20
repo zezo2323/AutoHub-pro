@@ -8,9 +8,109 @@ import java.sql.*;
 
 public class UserDAO {
 
-    // Get user by ID (existing - updated)
+    /**
+     * تسجيل دخول المستخدم
+     */
+    public static User login(String email, String password) {
+        String query = "SELECT user_id, full_name, email, password, phone, role, avatar, created_at FROM users WHERE email = ? AND password = ?";
+
+        try (Connection conn = DBconnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, email);
+            pstmt.setString(2, password);
+
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                User user = new User();
+                user.setUserId(rs.getInt("user_id"));
+                user.setFullName(rs.getString("full_name"));
+                user.setEmail(rs.getString("email"));
+                user.setPassword(rs.getString("password"));
+                user.setPhone(rs.getString("phone"));
+                user.setRole(rs.getString("role"));
+                user.setAvatar(rs.getString("avatar"));
+
+                Timestamp timestamp = rs.getTimestamp("created_at");
+                if (timestamp != null) {
+                    user.setCreatedAt(timestamp.toLocalDateTime());
+                }
+
+                System.out.println("✅ Login successful: " + user.getFullName() + " (" + user.getRole() + ")");
+                return user;
+            } else {
+                System.out.println("❌ Invalid email or password");
+            }
+        } catch (SQLException e) {
+            System.err.println("❌ Login error: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    /**
+     * تسجيل مستخدم جديد (Customer)
+     */
+    public static boolean register(String fullName, String email, String password, String phone) {
+        // التحقق من وجود البريد مسبقاً
+        if (isEmailExists(email)) {
+            System.out.println("❌ Email already exists: " + email);
+            return false;
+        }
+
+        String query = "INSERT INTO users (full_name, email, password, phone, role) VALUES (?, ?, ?, ?, 'customer')";
+
+        try (Connection conn = DBconnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, fullName);
+            pstmt.setString(2, email);
+            pstmt.setString(3, password);
+            pstmt.setString(4, phone != null && !phone.trim().isEmpty() ? phone : null);
+
+            int rowsInserted = pstmt.executeUpdate();
+
+            if (rowsInserted > 0) {
+                System.out.println("✅ User registered successfully: " + fullName + " (" + email + ")");
+                return true;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ Error during registration: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    /**
+     * التحقق من وجود البريد الإلكتروني
+     */
+    public static boolean isEmailExists(String email) {
+        String query = "SELECT COUNT(*) FROM users WHERE email = ?";
+
+        try (Connection conn = DBconnector.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(query)) {
+
+            pstmt.setString(1, email);
+            ResultSet rs = pstmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+
+        } catch (SQLException e) {
+            System.err.println("❌ Error checking email: " + e.getMessage());
+        }
+
+        return false;
+    }
+
+    // Get user by ID
     public static User getUserById(int userId) {
-        String query = "SELECT user_id, full_name, email, password, phone, role, avatar FROM users WHERE user_id = ?";
+        String query = "SELECT user_id, full_name, email, password, phone, role, avatar, created_at FROM users WHERE user_id = ?";
 
         try (Connection conn = DBconnector.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -27,6 +127,12 @@ public class UserDAO {
                 user.setPhone(rs.getString("phone"));
                 user.setRole(rs.getString("role"));
                 user.setAvatar(rs.getString("avatar"));
+
+                Timestamp timestamp = rs.getTimestamp("created_at");
+                if (timestamp != null) {
+                    user.setCreatedAt(timestamp.toLocalDateTime());
+                }
+
                 return user;
             }
         } catch (SQLException e) {
@@ -35,7 +141,7 @@ public class UserDAO {
         return null;
     }
 
-    // Get all users (NEW)
+    // Get all users
     public static ObservableList<User> getAllUsers() {
         ObservableList<User> users = FXCollections.observableArrayList();
         String query = "SELECT user_id, full_name, email, password, phone, role, avatar FROM users ORDER BY user_id DESC";
@@ -62,7 +168,7 @@ public class UserDAO {
         return users;
     }
 
-    // Add new user (NEW)
+    // Add new user
     public static boolean addUser(User user) {
         String query = "INSERT INTO users (full_name, email, password, phone, role) VALUES (?, ?, ?, ?, ?)";
 
@@ -84,7 +190,7 @@ public class UserDAO {
         }
     }
 
-    // Update user (existing - updated)
+    // Update user
     public static boolean updateUser(User user) {
         String query = "UPDATE users SET full_name = ?, email = ?, password = ?, phone = ?, role = ? WHERE user_id = ?";
 
@@ -107,7 +213,7 @@ public class UserDAO {
         }
     }
 
-    // Delete user (NEW)
+    // Delete user
     public static boolean deleteUser(int userId) {
         String query = "DELETE FROM users WHERE user_id = ?";
 
@@ -124,7 +230,7 @@ public class UserDAO {
         }
     }
 
-    // Search users (NEW)
+    // Search users
     public static ObservableList<User> searchUsers(String keyword) {
         ObservableList<User> users = FXCollections.observableArrayList();
         String query = "SELECT user_id, full_name, email, password, phone, role, avatar FROM users " +
@@ -157,7 +263,7 @@ public class UserDAO {
         return users;
     }
 
-    // Check if email exists (NEW)
+    // Check if email exists (for updates)
     public static boolean emailExists(String email, int excludeUserId) {
         String query = "SELECT COUNT(*) FROM users WHERE email = ? AND user_id != ?";
 
@@ -178,7 +284,7 @@ public class UserDAO {
         return false;
     }
 
-    // Update avatar (existing - keep as is)
+    // Update avatar
     public static boolean updateAvatar(int userId, String avatarPath) {
         if (avatarPath == null || avatarPath.isEmpty()) {
             return false;
@@ -208,33 +314,26 @@ public class UserDAO {
         return false;
     }
 
-    // Login method (if needed)
-    public static User login(String email, String password) {
-        String query = "SELECT user_id, full_name, email, password, phone, role, avatar FROM users WHERE email = ? AND password = ?";
+    /**
+     * الحصول على عدد المستخدمين الكلي (Admins + Customers)
+     */
+    public static int getTotalUsersCount() {
+        String query = "SELECT COUNT(*) FROM users";
 
         try (Connection conn = DBconnector.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(query)) {
-
-            pstmt.setString(1, email);
-            pstmt.setString(2, password);
-
-            ResultSet rs = pstmt.executeQuery();
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
 
             if (rs.next()) {
-                User user = new User();
-                user.setUserId(rs.getInt("user_id"));
-                user.setFullName(rs.getString("full_name"));
-                user.setEmail(rs.getString("email"));
-                user.setPassword(rs.getString("password"));
-                user.setPhone(rs.getString("phone"));
-                user.setRole(rs.getString("role"));
-                user.setAvatar(rs.getString("avatar"));
-                return user;
+                int count = rs.getInt(1);
+                System.out.println("✅ Total users: " + count);
+                return count;
             }
         } catch (SQLException e) {
-            System.err.println("Login error: " + e.getMessage());
+            System.err.println("❌ Error getting total users count: " + e.getMessage());
+            e.printStackTrace();
         }
-
-        return null;
+        return 0;
     }
+
 }

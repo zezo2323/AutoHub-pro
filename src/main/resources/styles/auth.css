@@ -1,0 +1,98 @@
+.root {
+    -fx-font-family: "Segoe UI";
+}
+
+/* LEFT PANE */
+.left-pane {
+    -fx-background-color: linear-gradient(to bottom, #f3f3f3, #ffffff);
+    -fx-padding: 40;
+    -fx-pref-width: 480;
+}
+
+.logo-icon {
+    -fx-font-size: 70px;
+}
+
+.title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0f172a;
+}
+
+.subtitle {
+    -fx-text-fill: #64748b;
+    -fx-max-width: 350;
+    -fx-text-alignment: center;
+    -fx-font-size: 14px;
+}
+
+/* STATS */
+.stat-box {
+    -fx-background-color: white;
+    -fx-padding: 20 25;
+    -fx-background-radius: 12;
+    -fx-alignment: center;
+    -fx-min-width: 100;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 8, 0, 0, 2);
+}
+
+/* FORM PANE */
+.form-pane {
+    -fx-padding: 60;
+    -fx-background-color: white;
+}
+
+.form-title {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #0f172a;
+}
+
+.form-subtitle {
+    -fx-text-fill: #64748b;
+    -fx-font-size: 14px;
+}
+
+/* INPUT FIELDS */
+.text-field, .password-field {
+    -fx-background-color: #f8fafc;
+    -fx-border-color: #e2e8f0;
+    -fx-border-width: 1;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 12 16;
+    -fx-font-size: 14px;
+}
+
+.text-field:focused, .password-field:focused {
+    -fx-border-color: black;
+    -fx-border-width: 2;
+}
+
+/* BUTTON */
+.primary-btn {
+    -fx-background-color: black;
+    -fx-text-fill: white;
+    -fx-pref-width: 300;
+    -fx-padding: 14 40;
+    -fx-background-radius: 8;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+}
+
+.primary-btn:hover {
+    -fx-background-color: #333;
+}
+
+/* LINK */
+.link {
+    -fx-text-fill: #64748b;
+    -fx-underline: true;
+    -fx-cursor: hand;
+    -fx-font-size: 13px;
+}
+
+.link:hover {
+    -fx-text-fill: black;
+}

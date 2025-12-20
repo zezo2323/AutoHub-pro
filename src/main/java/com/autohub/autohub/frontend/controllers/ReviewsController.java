@@ -1,9 +1,6 @@
 package com.autohub.autohub.frontend.controllers;
 
-import com.autohub.autohub.backend.models.Car;
-import com.autohub.autohub.backend.models.CarDAO;
-import com.autohub.autohub.backend.models.Comment;
-import com.autohub.autohub.backend.models.CommentDAO;
+import com.autohub.autohub.backend.models.*;
 import javafx.animation.ScaleTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -16,8 +13,6 @@ import java.util.List;
 
 public class ReviewsController {
 
-    // User ID مؤقت (هنستخدم user_id = 1 للتجربة)
-    private final int CURRENT_USER_ID = 1;
     private final Label[] starLabels = new Label[5];
     @FXML
     private VBox rootContainer;
@@ -38,6 +33,11 @@ public class ReviewsController {
     // Rating
     private int currentRating = 5;
     private int hoverRating = 0;
+
+    // User ID مؤقت (هنستخدم user_id = 1 للتجربة)
+    private int getCurrentUserId() {
+        return SessionManager.getCurrentUserId();
+    }
 
     @FXML
     public void initialize() {
@@ -175,7 +175,7 @@ public class ReviewsController {
         }
 
         // إنشاء التعليق
-        Comment comment = new Comment(CURRENT_USER_ID, selectedCarId, currentRating, content);
+        Comment comment = new Comment(getCurrentUserId(), selectedCarId, currentRating, content);
 
         // حفظ في الداتابيز
         boolean success = CommentDAO.addComment(comment);
@@ -199,10 +199,11 @@ public class ReviewsController {
 
     private void refreshReviews() {
         reviewsListContainer.getChildren().clear();
-        reviewsListContainer.setSpacing(20); // زودنا المسافة
+        reviewsListContainer.setSpacing(20);
 
-        // جلب التعليقات من الداتابيز
-        List<Comment> comments = CommentDAO.getAllComments();
+        // جلب التعليقات الخاصة باليوزر الحالي فقط
+        List<Comment> comments = CommentDAO.getCommentsByUserId(getCurrentUserId());
+
 
         if (comments.isEmpty()) {
             Label noReviews = new Label("No reviews yet. Be the first to share your experience!");
@@ -378,15 +379,19 @@ public class ReviewsController {
             comment.setRating(newRating[0]);
             comment.setCommentText(newText);
 
-            // TODO: حفظ في الداتابيز (هنعملها بعدين)
-            // boolean success = CommentDAO.updateComment(comment);
+            // حفظ في الداتابيز
+            boolean success = CommentDAO.updateComment(comment);
 
-            showMessage("Review updated successfully!", "#22c55e");
+            if (success) {
+                showMessage("Review updated successfully!", "#22c55e");
 
-            // استبدال Edit Card بالكارد العادي المحدث
-            VBox newCard = createReviewCard(comment);
-            int index = reviewsListContainer.getChildren().indexOf(editCard);
-            reviewsListContainer.getChildren().set(index, newCard);
+                // استبدال Edit Card بالكارد العادي المحدث
+                VBox newCard = createReviewCard(comment);
+                int index = reviewsListContainer.getChildren().indexOf(editCard);
+                reviewsListContainer.getChildren().set(index, newCard);
+            } else {
+                showMessage("Error updating review", "red");
+            }
         });
 
         Button cancelBtn = new Button("Cancel");
@@ -408,6 +413,7 @@ public class ReviewsController {
         int index = reviewsListContainer.getChildren().indexOf(originalCard);
         reviewsListContainer.getChildren().set(index, editCard);
     }
+
 
     /**
      * حذف تعليق

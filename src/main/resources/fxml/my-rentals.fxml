@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns:fx="http://javafx.com/fxml/1"
+      xmlns="http://javafx.com/javafx/17"
+      fx:controller="com.autohub.autohub.frontend.controllers.MyRentalsController"
+      spacing="24"
+      style="-fx-background-color: #f8fafc;">
+
+    <padding>
+        <Insets top="32" right="40" bottom="40" left="40"/>
+    </padding>
+
+    <!-- HEADER -->
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <VBox spacing="8" HBox.hgrow="ALWAYS">
+            <Label text="My Rentals"
+                   style="-fx-font-size: 32px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+            <Label text="View and manage your car rentals"
+                   style="-fx-font-size: 14px; -fx-text-fill: #64748b;"/>
+        </VBox>
+    </HBox>
+
+    <!-- STATS CARDS ROW -->
+    <HBox fx:id="statsRow" spacing="16" alignment="CENTER_LEFT"/>
+
+    <!-- TABLE CARD -->
+    <VBox style="-fx-background-color: white; -fx-background-radius: 12;
+                 -fx-padding: 24; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 12, 0, 0, 3);">
+
+        <TableView fx:id="rentalsTable"
+                   prefHeight="600"
+                   VBox.vgrow="ALWAYS"
+                   style="-fx-background-color: transparent; -fx-border-width: 0;">
+            <columns>
+                <TableColumn fx:id="colRentalId" text="Rental ID" prefWidth="100"/>
+                <TableColumn fx:id="colCar" text="Car" prefWidth="250"/>
+                <TableColumn fx:id="colPeriod" text="Period" prefWidth="160"/>
+                <TableColumn fx:id="colDuration" text="Duration" prefWidth="90"/>
+                <TableColumn fx:id="colAmount" text="Amount" prefWidth="120"/>
+                <TableColumn fx:id="colStatus" text="Status" prefWidth="110"/>
+                <TableColumn fx:id="colDaysLeft" text="Days Left" prefWidth="100"/>
+                <TableColumn fx:id="colActions" text="Actions" prefWidth="140" sortable="false"/>
+            </columns>
+        </TableView>
+    </VBox>
+
+</VBox>

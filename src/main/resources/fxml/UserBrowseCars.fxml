@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import org.kordamp.ikonli.javafx.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:id="rootBorderPane"
+            style="-fx-background-color: #f8fafc;"
+            xmlns="http://javafx.com/javafx/17"
+            fx:controller="com.autohub.autohub.frontend.controllers.UserBrowseCarsController">
+
+    <!-- TOP NAVIGATION BAR -->
+    <top>
+        <HBox alignment="CENTER_LEFT" spacing="20"
+              style="-fx-background-color: white; -fx-border-color: #e2e8f0; -fx-border-width: 0 0 1 0; -fx-padding: 16 40;">
+
+            <!-- LOGO -->
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <StackPane prefHeight="48" prefWidth="48"
+                           style="-fx-background-color: #2c5ff6; -fx-background-radius: 12;">
+                    <FontIcon iconLiteral="fas-car" iconSize="24" fill="white"/>
+                </StackPane>
+                <Label text="DriveNow"
+                       style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+            </HBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- NAVIGATION BUTTONS -->
+            <HBox alignment="CENTER" spacing="16">
+                <!-- Browse Cars (Active) -->
+                <Button fx:id="btnBrowseCars"
+                        onAction="#handleBrowseCars"
+                        text="Browse Cars"
+                        style="-fx-background-color: #2c5ff6; -fx-text-fill: white;
+                               -fx-padding: 12 24; -fx-background-radius: 8;
+                               -fx-font-size: 14px; -fx-font-weight: 600; -fx-cursor: hand;">
+                    <graphic>
+                        <FontIcon iconLiteral="fas-car-side" iconSize="14" fill="white"/>
+                    </graphic>
+                </Button>
+
+                <!-- My Rentals -->
+                <Button fx:id="btnMyRentals"
+                        onAction="#handleMyRentals"
+                        text="My Rentals"
+                        style="-fx-background-color: transparent; -fx-text-fill: #64748b;
+                               -fx-padding: 12 24; -fx-font-size: 14px; -fx-cursor: hand;">
+                    <graphic>
+                        <FontIcon iconLiteral="fas-key" iconSize="14" fill="#64748b"/>
+                    </graphic>
+                </Button>
+
+                <!-- My Reviews -->
+                <Button fx:id="btnReviews"
+                        onAction="#handleReviews"
+                        text="My Reviews"
+                        style="-fx-background-color: transparent; -fx-text-fill: #64748b;
+                               -fx-padding: 12 24; -fx-font-size: 14px; -fx-cursor: hand;">
+                    <graphic>
+                        <FontIcon iconLiteral="fas-star" iconSize="14" fill="#64748b"/>
+                    </graphic>
+                </Button>
+            </HBox>
+
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- PROFILE & LOGOUT -->
+            <HBox alignment="CENTER" spacing="16">
+                <!-- User Name Label -->
+                <Label fx:id="lblUserName"
+                       text="User Name"
+                       style="-fx-font-size: 14px; -fx-font-weight: 600; -fx-text-fill: #0f172a;"/>
+
+                <!-- Profile Button -->
+                <Button fx:id="btnProfile"
+                        onAction="#handleProfile"
+                        style="-fx-background-color: transparent; -fx-padding: 4; -fx-cursor: hand;">
+                    <graphic>
+                        <StackPane prefHeight="40" prefWidth="40">
+                            <FontIcon iconLiteral="fas-user-circle" iconSize="32" fill="#2c5ff6"/>
+                        </StackPane>
+                    </graphic>
+                </Button>
+
+                <!-- Logout Button -->
+                <Button fx:id="btnLogout"
+                        onAction="#handleLogout"
+                        style="-fx-background-color: transparent; -fx-padding: 8; -fx-cursor: hand;">
+                    <graphic>
+                        <FontIcon iconLiteral="fas-sign-out-alt" iconSize="20" fill="#64748b"/>
+                    </graphic>
+                </Button>
+            </HBox>
+        </HBox>
+    </top>
+
+    <!-- MAIN CONTENT -->
+    <center>
+        <ScrollPane fitToWidth="true"
+                    style="-fx-background-color: #f8fafc; -fx-background: #f8fafc;">
+            <VBox fx:id="contentBox"
+                  alignment="TOP_CENTER"
+                  spacing="40"
+                  style="-fx-padding: 40 30;">
+
+                <!-- HEADER -->
+                <VBox alignment="TOP_LEFT" spacing="8">
+                    <Label text="Available Cars"
+                           style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: #0f172a;"/>
+                    <Label text="Choose from our premium collection of vehicles"
+                           style="-fx-font-size: 16px; -fx-text-fill: #64748b;"/>
+                </VBox>
+
+                <!-- FILTERS & SEARCH -->
+                <HBox alignment="CENTER_LEFT" spacing="16">
+                    <!-- Category Filters -->
+                    <Button fx:id="btnFilterAll"
+                            text="All"
+                            style="-fx-background-color: #000000; -fx-text-fill: white;
+                                   -fx-padding: 10 24; -fx-background-radius: 30;
+                                   -fx-font-weight: bold; -fx-cursor: hand;"/>
+
+                    <Button fx:id="btnFilterElectric"
+                            text="Electric"
+                            style="-fx-background-color: #f8fafc; -fx-text-fill: #64748b;
+                                   -fx-padding: 10 24; -fx-background-radius: 30;
+                                   -fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-cursor: hand;"/>
+
+                    <Button fx:id="btnFilterLuxury"
+                            text="Luxury"
+                            style="-fx-background-color: #f8fafc; -fx-text-fill: #64748b;
+                                   -fx-padding: 10 24; -fx-background-radius: 30;
+                                   -fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-cursor: hand;"/>
+
+                    <Button fx:id="btnFilterSports"
+                            text="Sports"
+                            style="-fx-background-color: #f8fafc; -fx-text-fill: #64748b;
+                                   -fx-padding: 10 24; -fx-background-radius: 30;
+                                   -fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-cursor: hand;"/>
+
+                    <Button fx:id="btnFilterSUV"
+                            text="SUV"
+                            style="-fx-background-color: #f8fafc; -fx-text-fill: #64748b;
+                                   -fx-padding: 10 24; -fx-background-radius: 30;
+                                   -fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-cursor: hand;"/>
+
+                    <Button fx:id="btnFilterSedan"
+                            text="Sedan"
+                            style="-fx-background-color: #f8fafc; -fx-text-fill: #64748b;
+                                   -fx-padding: 10 24; -fx-background-radius: 30;
+                                   -fx-border-color: #e2e8f0; -fx-border-width: 1; -fx-cursor: hand;"/>
+
+                    <Region HBox.hgrow="ALWAYS"/>
+
+                    <!-- Search Bar -->
+                    <StackPane>
+                        <TextField fx:id="txtSearch"
+                                   promptText="Search cars..."
+                                   prefWidth="300"
+                                   style="-fx-background-color: white; -fx-background-radius: 30;
+                                          -fx-padding: 12 20 12 45; -fx-border-color: #e2e8f0;
+                                          -fx-border-width: 1; -fx-border-radius: 30;"/>
+                        <FontIcon iconLiteral="fas-search" iconSize="16" fill="#94a3b8"
+                                  translateX="-120" StackPane.alignment="CENTER_LEFT"/>
+                    </StackPane>
+                </HBox>
+
+                <!-- CARS GRID -->
+                <GridPane fx:id="carsContainer">
+                </GridPane>
+
+
+            </VBox>
+        </ScrollPane>
+    </center>
+
+</BorderPane>
